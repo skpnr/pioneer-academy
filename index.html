@@ -138,11 +138,21 @@
         </div>
 
         <!-- STEP 2: OTP Verification Screen -->
-        <div id="studentStepOtp" class="hidden space-y-4">
+        <div id="studentStepOtp" class="hidden space-y-3.5">
+          <!-- Mobile Delivery Quick Action Buttons -->
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="openWhatsAppOtp()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 border border-emerald-400/40">
+              <span>💬</span> <span>WhatsApp पर OTP</span>
+            </button>
+            <button onclick="openDeviceSmsOtp()" class="py-2.5 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 border border-blue-400/40">
+              <span>📱</span> <span>मोबाइल SMS खोलें</span>
+            </button>
+          </div>
+
           <!-- In-App Realistic SMS Notification Banner -->
-          <div id="otpSimulatorBanner" class="p-3 bg-slate-950 border border-emerald-500/50 rounded-2xl text-emerald-200 text-xs shadow-xl space-y-1.5">
+          <div id="otpSimulatorBanner" class="p-3 bg-slate-950 border border-emerald-500/50 rounded-2xl text-emerald-200 text-xs shadow-xl space-y-1">
             <div class="flex items-center justify-between text-emerald-400 font-bold">
-              <span class="flex items-center gap-1.5"><span>📱</span> <span>SMS सत्यापन कोड (OTP)</span></span>
+              <span class="flex items-center gap-1.5"><span>📩</span> <span>SMS सत्यापन कोड (OTP)</span></span>
               <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono">LIVE OTP</span>
             </div>
             <p class="text-[12px] text-slate-300 leading-relaxed">
@@ -746,6 +756,25 @@
                   <span>📋</span> <span>मैसेज कॉपी करें</span>
                 </button>
               </div>
+            </div>
+          </div>
+
+          <!-- SMS Gateway Config Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">📡</span>
+                <h4 class="font-extrabold text-sm text-slate-900">रियल मोबाइल SMS गेटवे सेटिंग्स (Fast2SMS API)</h4>
+              </div>
+              <span id="smsGatewayStatusBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">WhatsApp व लाइव OTP सक्रिय</span>
+            </div>
+            <p class="text-xs text-slate-500">यदि आप चाहते हैं कि छात्रों के मोबाइल सिम पर सीधा टेलीकॉम SMS पहुंचे, तो अपनी Fast2SMS API Key यहाँ दर्ज करें:</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="password" id="adminSmsApiKey" placeholder="Fast2SMS API Key दर्ज करें (वैकल्पिक)" 
+                class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button onclick="saveAdminSmsConfig()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm">
+                सेव करें
+              </button>
             </div>
           </div>
 
@@ -63405,35 +63434,40 @@
         return;
       }
 
-      // Check if student is authorized in local whitelist or Supabase cloud
-      const list = getAuthorizedStudents();
-      let found = list.find(s => s.mobile === cleanPhone);
-
-      if (!found && isSupabaseConnected) {
-        try {
-          const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=*`, {
-            headers: {
-              "apikey": SUPABASE_CONFIG.anonKey,
-              "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
-            }
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-              found = {
-                mobile: data[0].mobile,
-                name: data[0].name || "अधिकृत छात्र",
-                activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
-                addedAt: data[0].created_at || "2026-11-01",
-                status: data[0].status || "ACTIVE"
-              };
-              list.push(found);
-              saveAuthorizedStudents(list);
-            }
+      // 1. LIVE REAL-TIME CHECK: First check live Supabase database so newly added numbers work immediately!
+      let found = null;
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=*`, {
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
           }
-        } catch (e) {
-          console.warn("Cloud student verification skipped:", e);
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0 && data[0].status === "ACTIVE") {
+            found = {
+              mobile: data[0].mobile,
+              name: data[0].name || "अधिकृत छात्र",
+              activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
+              addedAt: data[0].created_at ? data[0].created_at.split("T")[0] : "2026-11-01",
+              status: data[0].status || "ACTIVE"
+            };
+            // Cache immediately to local storage
+            const localList = getAuthorizedStudents();
+            const idx = localList.findIndex(s => s.mobile === cleanPhone);
+            if (idx >= 0) localList[idx] = found; else localList.unshift(found);
+            saveAuthorizedStudents(localList);
+          }
         }
+      } catch (e) {
+        console.warn("Live Supabase check failed, checking offline storage:", e);
+      }
+
+      // 2. Offline fallback: Check local whitelist
+      if (!found) {
+        const list = getAuthorizedStudents();
+        found = list.find(s => s.mobile === cleanPhone);
       }
 
       if (!found) {
@@ -63441,13 +63475,31 @@
         return;
       }
 
-      // Generate 6-digit OTP
+      // 3. Generate 6-digit Secure OTP
       activeStudentOtp = Math.floor(100000 + Math.random() * 900000).toString();
       activeStudentPhone = cleanPhone;
       activeStudentData = found;
       otpExpiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes validity
 
-      // Update UI to Step 2 (OTP Entry)
+      // 4. Update Supabase with current OTP for multi-device sync
+      fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}`, {
+        method: "PATCH",
+        headers: {
+          "apikey": SUPABASE_CONFIG.anonKey,
+          "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ activation_key: activeStudentOtp })
+      }).catch(e => console.warn("Supabase OTP sync notice:", e));
+
+      // 5. Send Real SMS if Fast2SMS Gateway is configured
+      const smsApiKey = safeGet("PIONEER_FAST2SMS_KEY", "");
+      if (smsApiKey) {
+        fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(smsApiKey)}&route=otp&variables_values=${activeStudentOtp}&numbers=${cleanPhone}`)
+          .then(r => r.json()).then(res => console.log("Fast2SMS result:", res)).catch(e => console.warn("Fast2SMS gateway error:", e));
+      }
+
+      // 6. Update UI to Step 2 (OTP Entry)
       const stepMob = document.getElementById("studentStepMobile");
       const stepOtp = document.getElementById("studentStepOtp");
       const displaySpan = document.getElementById("simulatedOtpDisplay");
@@ -63482,6 +63534,36 @@
           }
         }
       }, 1000);
+    }
+
+    function openWhatsAppOtp() {
+      if (!activeStudentPhone || !activeStudentOtp) return;
+      const text = encodeURIComponent(`🏆 *पायनियर एकेडमी (PIONEER Academy)*\nछात्र लॉगिन हेतु आपका 6-अंकीय OTP है: *${activeStudentOtp}*\n(यह OTP 5 मिनट के लिए मान्य है)`);
+      window.open(`https://api.whatsapp.com/send?phone=91${activeStudentPhone}&text=${text}`, '_blank');
+    }
+
+    function openDeviceSmsOtp() {
+      if (!activeStudentPhone || !activeStudentOtp) return;
+      const text = encodeURIComponent(`PIONEER Academy OTP: ${activeStudentOtp}`);
+      window.location.href = `sms:91${activeStudentPhone}?body=${text}`;
+    }
+
+    function saveAdminSmsConfig() {
+      const input = document.getElementById("adminSmsApiKey");
+      if (!input) return;
+      const val = input.value.trim();
+      safeSet("PIONEER_FAST2SMS_KEY", val);
+      const badge = document.getElementById("smsGatewayStatusBadge");
+      if (badge) {
+        if (val) {
+          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+          badge.innerText = "✓ Fast2SMS टेलीकॉम गेटवे सक्रिय";
+        } else {
+          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badge.innerText = "WhatsApp व लाइव OTP सक्रिय";
+        }
+      }
+      alert(val ? "Fast2SMS API Key सफलतापूर्वक सेव हो गई!" : "सेटिंग्स अपडेट हो गई (WhatsApp व लाइव OTP सक्रिय)।");
     }
 
     function verifyStudentOtp() {
@@ -63618,7 +63700,7 @@
       }
     }
 
-    function handleAddStudentFromAdmin() {
+    async function handleAddStudentFromAdmin() {
       const phoneEl = document.getElementById("newStudentPhone");
       const nameEl = document.getElementById("newStudentName");
       if (!phoneEl) return;
@@ -63632,7 +63714,10 @@
       }
 
       const key = generateActivationKey(cleanPhone);
-      addAuthorizedStudent(cleanPhone, name, key);
+      const studentItem = addAuthorizedStudent(cleanPhone, name, key);
+
+      // Save directly to Supabase cloud in real-time
+      await saveStudentToSupabase(studentItem);
 
       // Show Alert Box
       const alertBox = document.getElementById("newKeyAlertBox");
@@ -63646,6 +63731,7 @@
       phoneEl.value = "";
       if (nameEl) nameEl.value = "";
       renderAuthorizedStudentsTable();
+      alert(`✅ छात्र (+91 ${cleanPhone}) Supabase क्लाउड और ऐप में सक्रिय हो चुका है!\nअब यह छात्र किसी भी फ़ोन पर तुरंत OTP द्वारा लॉगिन कर सकता है।`);
     }
 
     function handleRemoveStudentFromAdmin(phone) {
