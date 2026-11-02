@@ -4,6 +4,7 @@ build/
 app/build/
 *.apk
 !web/*.apk
+!PIONEER.apk
 *.aab
 *.ap_
 output_apk/
