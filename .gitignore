@@ -1,0 +1,14 @@
+﻿# Gradle & Android Build Artifacts
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+*.ap_
+output_apk/
+local.properties
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
