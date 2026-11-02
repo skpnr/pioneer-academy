@@ -1,8 +1,9 @@
-﻿# Gradle & Android Build Artifacts
+# Gradle & Android Build Artifacts
 .gradle/
 build/
 app/build/
 *.apk
+!web/*.apk
 *.aab
 *.ap_
 output_apk/

@@ -278,9 +278,9 @@
         <div class="dash-hero text-white p-5 rounded-2xl relative overflow-hidden">
           <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="space-y-1.5">
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold">
+              <div id="cloudSyncStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                100% ऑफ़लाइन मोड सक्रिय • 0 MB डेटा आवश्यक
+                🟢 Supabase क्लाउड डेटाबेस कनेक्टेड • 100% ऑफ़लाइन समर्थित
               </div>
               <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">
                 झारखंड प्रतियोगी परीक्षा मास्टर पोर्टल
@@ -290,11 +290,11 @@
               </p>
             </div>
             <div class="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+              <a href="PIONEER.apk" download="PIONEER.apk" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all border border-emerald-400/40 text-center">
+                <span>📲</span> <span>डाउनलोड Android APK</span>
+              </a>
               <button onclick="switchTab('tests')" class="flex-1 sm:flex-initial bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all">
                 <span>🎯</span> <span>50 टेस्ट सीरीज़ दें</span>
-              </button>
-              <button onclick="switchTab('jharkhand')" class="flex-1 sm:flex-initial bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all">
-                <span>📖</span> <span>149p नोट्स पढ़ें</span>
               </button>
             </div>
           </div>
@@ -62385,6 +62385,117 @@
     // MASTER STUDENT PASSWORD
     const STUDENT_MASTER_PASSWORD = "070719";
 
+    // SUPABASE CLOUD DATABASE CONFIGURATION (FREE TIER)
+    const SUPABASE_CONFIG = {
+      url: "https://qjfgimwmfypjsrwwkvld.supabase.co",
+      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqZmdpbXdtZnlwanNyd3drdmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MjMxMjIsImV4cCI6MjEwOTE5OTEyMn0.6yFujP6t4H0E7rK9TgS17aoFdPcWZe90PUGipXnxtcE"
+    };
+
+    let isSupabaseConnected = false;
+
+    async function syncStudentsFromSupabase() {
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?select=*`, {
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+          }
+        });
+        if (res.ok) {
+          const cloudList = await res.json();
+          if (Array.isArray(cloudList) && cloudList.length > 0) {
+            isSupabaseConnected = true;
+            const localList = getAuthorizedStudents();
+            cloudList.forEach(cs => {
+              const idx = localList.findIndex(l => l.mobile === cs.mobile);
+              const mapped = {
+                mobile: cs.mobile,
+                name: cs.name || "अधिकृत छात्र",
+                password: cs.password || "070719",
+                activationKey: cs.activation_key || generateActivationKey(cs.mobile),
+                addedAt: cs.created_at ? cs.created_at.split("T")[0] : "2026-11-01",
+                status: cs.status || "ACTIVE"
+              };
+              if (idx >= 0) localList[idx] = mapped;
+              else localList.push(mapped);
+            });
+            saveAuthorizedStudents(localList);
+            updateCloudSyncStatus(true);
+            if (state.activeTab === "admin") renderAuthorizedStudentsTable();
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Supabase fetch skipped (offline mode):", e);
+      }
+      updateCloudSyncStatus(false);
+    }
+
+    async function saveStudentToSupabase(student) {
+      try {
+        await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students`, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates"
+          },
+          body: JSON.stringify({
+            mobile: student.mobile,
+            name: student.name,
+            password: student.password || "070719",
+            status: student.status || "ACTIVE",
+            activation_key: student.activationKey
+          })
+        });
+      } catch (e) {
+        console.warn("Could not save to Supabase cloud:", e);
+      }
+    }
+
+    async function deleteStudentFromSupabase(mobile) {
+      try {
+        await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${mobile}`, {
+          method: "DELETE",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+          }
+        });
+      } catch (e) {
+        console.warn("Could not delete from Supabase cloud:", e);
+      }
+    }
+
+    async function recordTestScoreToSupabase(scoreData) {
+      try {
+        await fetch(`${SUPABASE_CONFIG.url}/rest/v1/test_submissions`, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(scoreData)
+        });
+      } catch (e) {
+        console.warn("Could not record score to Supabase cloud:", e);
+      }
+    }
+
+    function updateCloudSyncStatus(online) {
+      const badge = document.getElementById("cloudSyncStatusBadge");
+      if (!badge) return;
+      if (online) {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 Supabase क्लाउड डेटाबेस कनेक्टेड`;
+        badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold";
+      } else {
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> 🟡 100% ऑफ़लाइन बैकअप मोड`;
+        badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[11px] font-bold";
+      }
+    }
+
     // 10 PRE-APPROVED AUTHORIZED STUDENTS WHITELIST
     const DEFAULT_PREAPPROVED_STUDENTS = [
       { mobile: "7903539200", name: "पंजीकृत छात्र 01", password: "070719", addedAt: "2026-11-01", status: "ACTIVE" },
@@ -62486,6 +62597,7 @@
         list.unshift(item);
       }
       saveAuthorizedStudents(list);
+      saveStudentToSupabase(item);
       return item;
     }
 
@@ -62494,6 +62606,7 @@
       let list = getAuthorizedStudents();
       list = list.filter(s => s.mobile !== cleanPhone);
       saveAuthorizedStudents(list);
+      deleteStudentFromSupabase(cleanPhone);
     }
 
     // Session Management
@@ -62555,6 +62668,9 @@
         if (savedSession) {
           state.currentUser = savedSession;
         }
+
+        // Background sync with Supabase cloud (offline safe)
+        syncStudentsFromSupabase().catch(e => console.warn("Background Supabase sync skipped:", e));
 
         updateBadgeCounts();
         updateDashboardStats();
@@ -63098,6 +63214,22 @@
       const currentBest = parseFloat(safeGet(`BEST_SCORE_${state.currentTest.id}`, "0"));
       if (parseFloat(finalScore) >= currentBest) {
         safeSet(`BEST_SCORE_${state.currentTest.id}`, `${finalScore} / ${totalQ}`);
+      }
+
+      // Record to Supabase Cloud if online
+      if (state.currentUser && state.currentUser.mobile) {
+        recordTestScoreToSupabase({
+          student_mobile: state.currentUser.mobile,
+          student_name: state.currentUser.name || "छात्र",
+          test_id: state.currentTest.id,
+          test_title: state.currentTest.title,
+          total_questions: totalQ,
+          correct_count: correct,
+          wrong_count: wrong,
+          unattempted_count: unattempted,
+          final_score: parseFloat(finalScore),
+          accuracy_pct: accuracy
+        });
       }
 
       document.getElementById("resTotalQuestions").innerText = totalQ;
