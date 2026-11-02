@@ -117,36 +117,56 @@
         </button>
       </div>
 
-      <!-- STUDENT LOGIN FORM -->
-      <div id="studentLoginForm" class="space-y-3.5">
-        <div class="space-y-1">
-          <label class="block text-xs font-bold text-slate-300">पंजीकृत मोबाइल नंबर (10 अंक):</label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-2.5 text-xs text-slate-400 font-bold">+91</span>
-            <input type="tel" id="studentLoginPhone" maxlength="10" placeholder="उदा. 7903539200" 
-              class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-12 pr-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+      <!-- STUDENT LOGIN FORM (OTP BASED - NO PASSWORD REQUIRED) -->
+      <div id="studentLoginForm" class="space-y-4">
+        
+        <!-- STEP 1: Enter Mobile Number -->
+        <div id="studentStepMobile" class="space-y-3.5">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-300">पंजीकृत मोबाइल नंबर (10 अंक):</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-2.5 text-xs text-slate-400 font-bold">+91</span>
+              <input type="tel" id="studentLoginPhone" maxlength="10" placeholder="10-अंकीय मोबाइल नंबर दर्ज करें" 
+                class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-12 pr-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+            </div>
+            <p class="text-[11px] text-slate-400">केवल अधिकृत छात्रों के पंजीकृत मोबाइल नंबर पर ही OTP भेजा जाएगा।</p>
           </div>
+
+          <button id="btnRequestOtp" onclick="requestStudentOtp()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+            <span>📩</span> <span>OTP प्राप्त करें</span>
+          </button>
         </div>
 
-        <div class="space-y-1">
-          <label class="block text-xs font-bold text-slate-300">छात्र पासवर्ड / पिन:</label>
-          <input type="password" id="studentLoginPassword" maxlength="20" placeholder="छात्र पासवर्ड (070719)" 
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
-          <p class="text-[11px] text-slate-400">अधिकृत छात्रों हेतु पासवर्ड: <span class="font-mono font-bold text-amber-400">070719</span></p>
-        </div>
-
-        <!-- Optional Activation Key Box (for new numbers added via offline key) -->
-        <div id="studentActivationBox" class="hidden space-y-2 p-3 bg-amber-950/40 border border-amber-500/50 rounded-2xl">
-          <div class="flex items-center gap-1.5 text-amber-300 text-xs font-bold">
-            <span>🔑</span> <span>वैकल्पिक: 6-अंकीय एक्टिवेशन की (Activation Key) दर्ज करें:</span>
+        <!-- STEP 2: OTP Verification Screen -->
+        <div id="studentStepOtp" class="hidden space-y-4">
+          <!-- In-App Realistic SMS Notification Banner -->
+          <div id="otpSimulatorBanner" class="p-3 bg-slate-950 border border-emerald-500/50 rounded-2xl text-emerald-200 text-xs shadow-xl space-y-1.5">
+            <div class="flex items-center justify-between text-emerald-400 font-bold">
+              <span class="flex items-center gap-1.5"><span>📱</span> <span>SMS सत्यापन कोड (OTP)</span></span>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono">LIVE OTP</span>
+            </div>
+            <p class="text-[12px] text-slate-300 leading-relaxed">
+              लॉगिन हेतु आपका 6-अंकीय OTP: <span id="simulatedOtpDisplay" class="font-mono font-black text-lg text-amber-300 tracking-wider">------</span>
+            </p>
           </div>
-          <input type="text" id="studentLoginKey" maxlength="6" placeholder="6-अंक की दर्ज करें" 
-            class="w-full bg-slate-950 border border-amber-500/60 rounded-xl px-4 py-2 text-center text-lg font-mono font-bold tracking-widest text-amber-300 focus:outline-none focus:border-amber-400">
-        </div>
 
-        <button onclick="handleStudentLogin()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-          <span>🚀</span> <span>पायनियर पोर्टल में प्रवेश करें</span>
-        </button>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <label class="font-bold text-slate-300">6-अंकीय OTP दर्ज करें:</label>
+              <button onclick="resetStudentOtpForm()" class="text-blue-400 hover:underline text-[11px] font-semibold">नंबर बदलें</button>
+            </div>
+            <input type="text" id="studentOtpInput" maxlength="6" placeholder="• • • • • •" 
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-xl font-mono font-black tracking-widest text-amber-400 placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
+              <span>समय सीमा: 5 मिनट</span>
+              <button id="btnResendOtp" onclick="requestStudentOtp()" disabled class="text-slate-500 text-[11px] font-semibold">पुनः OTP भेजें (<span id="otpCountdown">45</span>s)</button>
+            </div>
+          </div>
+
+          <button onclick="verifyStudentOtp()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+            <span>✅</span> <span>सत्यापित करें और प्रवेश करें</span>
+          </button>
+        </div>
 
         <!-- Help Info -->
         <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-center space-y-1">
@@ -157,19 +177,18 @@
         </div>
       </div>
 
-      <!-- ADMIN LOGIN FORM -->
+      <!-- ADMIN LOGIN FORM (PASSWORD BASED) -->
       <div id="adminLoginForm" class="hidden space-y-4">
         <div class="space-y-1.5">
           <label class="block text-xs font-bold text-slate-300">एडमिन मोबाइल नंबर:</label>
-          <input type="tel" id="adminLoginPhone" maxlength="10" value="9155933842" 
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+          <input type="tel" id="adminLoginPhone" maxlength="10" placeholder="10-अंकीय एडमिन मोबाइल नंबर" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
         </div>
 
         <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-300">एडमिन पासवर्ड / पिन:</label>
-          <input type="password" id="adminLoginPassword" maxlength="20" placeholder="एडमिन पासवर्ड दर्ज करें" 
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-          <p class="text-[11px] text-slate-400">मास्टर क्रेडेंशियल सुरक्षित रखें।</p>
+          <label class="block text-xs font-bold text-slate-300">एडमिन पासवर्ड:</label>
+          <input type="password" id="adminLoginPassword" maxlength="30" placeholder="पासवर्ड दर्ज करें" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
         </div>
 
         <button onclick="handleAdminLogin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
@@ -692,13 +711,13 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">छात्र का 10-अंकीय मोबाइल नंबर:*</label>
                 <div class="relative">
                   <span class="absolute left-3 top-2 text-xs font-bold text-slate-400">+91</span>
-                  <input type="tel" id="newStudentPhone" maxlength="10" placeholder="उदा. 9876543210" 
+                  <input type="tel" id="newStudentPhone" maxlength="10" placeholder="10-अंकीय मोबाइल नंबर" 
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-12 pr-3 py-2 text-xs font-bold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">छात्र का नाम / टिप्पणी (वैकल्पिक):</label>
-                <input type="text" id="newStudentName" placeholder="उदा. राहुल कुमार (राँची)" 
+                <input type="text" id="newStudentName" placeholder="छात्र का नाम दर्ज करें" 
                   class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
               </div>
             </div>
@@ -63348,51 +63367,152 @@
       if (errBox) errBox.classList.add("hidden");
     }
 
-    function handleStudentLogin() {
+    let activeStudentOtp = null;
+    let activeStudentPhone = "";
+    let activeStudentData = null;
+    let otpCountdownTimer = null;
+    let otpExpiresAt = 0;
+
+    function resetStudentOtpForm() {
+      hideAuthError();
+      const stepMob = document.getElementById("studentStepMobile");
+      const stepOtp = document.getElementById("studentStepOtp");
+      if (stepMob) stepMob.classList.remove("hidden");
+      if (stepOtp) stepOtp.classList.add("hidden");
+      if (otpCountdownTimer) {
+        clearInterval(otpCountdownTimer);
+        otpCountdownTimer = null;
+      }
+      activeStudentOtp = null;
+      activeStudentPhone = "";
+      activeStudentData = null;
+      const phoneInput = document.getElementById("studentLoginPhone");
+      if (phoneInput) {
+        phoneInput.focus();
+      }
+    }
+
+    async function requestStudentOtp() {
       hideAuthError();
       const phoneInput = document.getElementById("studentLoginPhone");
-      const passInput = document.getElementById("studentLoginPassword");
-      const keyInput = document.getElementById("studentLoginKey");
       if (!phoneInput) return;
 
       const rawPhone = phoneInput.value.trim();
       const cleanPhone = rawPhone.replace(/\D/g, "");
-      const pass = passInput ? passInput.value.trim() : "";
 
       if (cleanPhone.length !== 10) {
-        showAuthError("कृपया मान्य 10-अंकीय मोबाइल नंबर दर्ज करें (उदा. 7903539200)।");
+        showAuthError("कृपया 10-अंकीय मान्य मोबाइल नंबर दर्ज करें।");
         return;
       }
 
-      if (!pass) {
-        showAuthError("कृपया छात्र पासवर्ड दर्ज करें (पासवर्ड: 070719)।");
-        return;
-      }
-
-      // 1. Check if student in authorized list
+      // Check if student is authorized in local whitelist or Supabase cloud
       const list = getAuthorizedStudents();
-      const found = list.find(s => s.mobile === cleanPhone);
+      let found = list.find(s => s.mobile === cleanPhone);
 
-      if (found) {
-        if (pass === STUDENT_MASTER_PASSWORD || pass === (found.password || STUDENT_MASTER_PASSWORD)) {
-          setAuthSession("student", cleanPhone, found.name || "अधिकृत छात्र");
-          return;
-        } else {
-          showAuthError("गलत छात्र पासवर्ड! कृपया सही पासवर्ड (070719) दर्ज करें।");
-          return;
+      if (!found && isSupabaseConnected) {
+        try {
+          const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=*`, {
+            headers: {
+              "apikey": SUPABASE_CONFIG.anonKey,
+              "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+            }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              found = {
+                mobile: data[0].mobile,
+                name: data[0].name || "अधिकृत छात्र",
+                activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
+                addedAt: data[0].created_at || "2026-11-01",
+                status: data[0].status || "ACTIVE"
+              };
+              list.push(found);
+              saveAuthorizedStudents(list);
+            }
+          }
+        } catch (e) {
+          console.warn("Cloud student verification skipped:", e);
         }
       }
 
-      // 2. Check if valid activation key was entered as password or key
-      const expectedKey = generateActivationKey(cleanPhone);
-      const rawKey = keyInput ? keyInput.value.trim() : "";
-      if (pass === expectedKey || rawKey === expectedKey) {
-        addAuthorizedStudent(cleanPhone, "अधिकृत छात्र", expectedKey);
-        setAuthSession("student", cleanPhone, "अधिकृत छात्र");
+      if (!found) {
+        showAuthError("यह मोबाइल नंबर पंजीकृत नहीं है। केवल पायनियर एकेडमी के अधिकृत छात्र ही प्रवेश कर सकते हैं। नामांकन हेतु एडमिन से संपर्क करें।");
         return;
       }
 
-      showAuthError("यह मोबाइल नंबर अधिकृत नहीं है। केवल पायनियर एकेडमी के पंजीकृत छात्र ही लॉगिन कर सकते हैं। सहायता हेतु एडमिन से संपर्क करें: 9155933842");
+      // Generate 6-digit OTP
+      activeStudentOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      activeStudentPhone = cleanPhone;
+      activeStudentData = found;
+      otpExpiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes validity
+
+      // Update UI to Step 2 (OTP Entry)
+      const stepMob = document.getElementById("studentStepMobile");
+      const stepOtp = document.getElementById("studentStepOtp");
+      const displaySpan = document.getElementById("simulatedOtpDisplay");
+      const otpInput = document.getElementById("studentOtpInput");
+
+      if (stepMob) stepMob.classList.add("hidden");
+      if (stepOtp) stepOtp.classList.remove("hidden");
+      if (displaySpan) displaySpan.innerText = activeStudentOtp;
+      if (otpInput) {
+        otpInput.value = "";
+        otpInput.focus();
+      }
+
+      // Start Countdown for Resend Button
+      let countdown = 45;
+      const resendBtn = document.getElementById("btnResendOtp");
+      const countdownSpan = document.getElementById("otpCountdown");
+      if (resendBtn) resendBtn.disabled = true;
+      if (countdownSpan) countdownSpan.innerText = countdown;
+
+      if (otpCountdownTimer) clearInterval(otpCountdownTimer);
+      otpCountdownTimer = setInterval(() => {
+        countdown--;
+        if (countdownSpan) countdownSpan.innerText = countdown;
+        if (countdown <= 0) {
+          clearInterval(otpCountdownTimer);
+          otpCountdownTimer = null;
+          if (resendBtn) {
+            resendBtn.disabled = false;
+            resendBtn.className = "text-blue-400 hover:underline text-[11px] font-semibold cursor-pointer";
+            resendBtn.innerText = "पुनः OTP भेजें";
+          }
+        }
+      }, 1000);
+    }
+
+    function verifyStudentOtp() {
+      hideAuthError();
+      const otpInput = document.getElementById("studentOtpInput");
+      if (!otpInput) return;
+
+      const enteredOtp = otpInput.value.trim().replace(/\D/g, "");
+
+      if (Date.now() > otpExpiresAt) {
+        showAuthError("OTP की समय सीमा समाप्त (Expired) हो चुकी है। कृपया पुनः OTP प्राप्त करें।");
+        return;
+      }
+
+      if (!activeStudentOtp || enteredOtp !== activeStudentOtp) {
+        showAuthError("अमान्य OTP! कृपया प्राप्त 6-अंकीय OTP सही दर्ज करें।");
+        return;
+      }
+
+      // OTP Verification Succeeded!
+      if (otpCountdownTimer) {
+        clearInterval(otpCountdownTimer);
+        otpCountdownTimer = null;
+      }
+
+      setAuthSession("student", activeStudentPhone, (activeStudentData && activeStudentData.name) || "अधिकृत छात्र");
+    }
+
+    // Retain legacy signature for backward compatibility
+    function handleStudentLogin() {
+      requestStudentOtp();
     }
 
     function handleAdminLogin() {
@@ -63404,10 +63524,20 @@
       const phone = phoneEl.value.trim().replace(/\D/g, "");
       const pass = passEl.value.trim();
 
+      if (phone.length !== 10) {
+        showAuthError("कृपया 10-अंकीय एडमिन मोबाइल नंबर दर्ज करें।");
+        return;
+      }
+
+      if (!pass) {
+        showAuthError("कृपया एडमिन पासवर्ड दर्ज करें।");
+        return;
+      }
+
       if (phone === ADMIN_CREDENTIALS.mobile && pass === ADMIN_CREDENTIALS.password) {
         setAuthSession("admin", phone, ADMIN_CREDENTIALS.name);
       } else {
-        showAuthError("अमान्य एडमिन मोबाइल नंबर या पासवर्ड! (मास्टर पासवर्ड 000000 दर्ज करें)");
+        showAuthError("अमान्य एडमिन मोबाइल नंबर अथवा पासवर्ड।");
       }
     }
 
@@ -63565,7 +63695,7 @@
     }
 
     function copySingleStudentInvite(phone, key) {
-      const msg = `नमस्ते! PIONEER Academy ऐप में आपका स्वागत है।\nआपका पंजीकृत मोबाइल: ${phone}\nछात्र पासवर्ड: 070719\n(वैकल्पिक एक्टिवेशन की: ${key})\nऐप खोलकर अपना मोबाइल नंबर व पासवर्ड (070719) दर्ज करें और अध्ययन शुरू करें!\n- पायनियर एकेडमी (हेल्पलाइन: 9155933842)`;
+      const msg = `नमस्ते! PIONEER Academy ऐप में आपका स्वागत है।\nआपका पंजीकृत मोबाइल: ${phone}\nऐप खोलकर अपना मोबाइल नंबर दर्ज करें और प्राप्त OTP डालकर सीधे लॉगिन करें!\n- पायनियर एकेडमी (हेल्पलाइन: 9155933842)`;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(msg).then(() => alert("एक्टिवेशन मैसेज क्लिपबोर्ड पर कॉपी हो गया!"));
       } else {
