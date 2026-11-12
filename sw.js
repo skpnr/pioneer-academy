@@ -1,9 +1,12 @@
-const CACHE_NAME = "pioneer-pwa-v3";
+const CACHE_NAME = "pioneer-pwa-v4";
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./vendor/tailwind.js",
+  "./master_datasets_pure.js",
+  "./hist_sets_manifest.js",
+  "./math_sets_manifest.js",
   "./apple-touch-icon.png",
   "./icon-192.png",
   "./icon-512.png",
