@@ -311,7 +311,7 @@
         <span>🏠</span> <span>डैशबोर्ड</span>
       </button>
       <button id="tab_tests" onclick="switchTab('tests')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap text-amber-300 hover:text-white">
-        <span>🎯</span> <span>टेस्ट सीरीज़</span> <span id="testsBadge" class="bg-amber-500 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">100</span>
+        <span>🎯</span> <span>टेस्ट सीरीज़</span> <span id="testsBadge" class="bg-amber-500 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">150</span>
       </button>
       <button id="tab_jharkhand" onclick="switchTab('jharkhand')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap text-slate-300 hover:text-white">
         <span>🗺️</span> <span>झारखंड GK</span> <span id="jharkhandBadge" class="bg-slate-800 text-emerald-300 text-[10px] px-1.5 py-0.2 rounded-full font-bold border border-emerald-500/30">149p</span>
@@ -378,14 +378,17 @@
                 झारखंड प्रतियोगी परीक्षा मास्टर पोर्टल
               </h2>
               <p class="text-xs text-blue-200/90 max-w-lg leading-relaxed">
-                UPSC CSAT, CDS, SSC CGL, Bank PO, JPSC व JSSC CGL हेतु 10,000+ प्रश्नोत्तरी (50 गणित + 50 झारखंड GK सेट्स), संपूर्ण अध्याय नोट्स व हल सहित अभ्यास।
+                UPSC Prelims/CSAT, CDS, SSC CGL, Bank PO, JPSC व JSSC CGL हेतु 15,000+ प्रश्नोत्तरी (50 इतिहास + 50 गणित + 50 झारखंड GK सेट्स), संपूर्ण अध्याय नोट्स व हल सहित अभ्यास।
               </p>
             </div>
-            <div class="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+            <div class="flex flex-row flex-wrap sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+              <button onclick="openTestsBySubject('HIST')" class="flex-1 sm:flex-initial bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all border border-rose-400/40 text-center">
+                <span>📜</span> <span>50 इतिहास टेस्ट (5,000 Qs)</span>
+              </button>
               <button onclick="openTestsBySubject('MATH')" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all border border-emerald-400/40 text-center">
                 <span>🧮</span> <span>50 गणित टेस्ट (5,000 Qs)</span>
               </button>
-              <button onclick="openTestsBySubject('JH')" class="flex-1 sm:flex-initial bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all">
+              <button onclick="openTestsBySubject('JH')" class="flex-1 sm:flex-initial bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all">
                 <span>🎯</span> <span>50 झारखंड टेस्ट दें</span>
               </button>
             </div>
@@ -424,18 +427,18 @@
             </div>
           </div>
 
-          <!-- Card 3: 24 Districts / 5 Divisions -->
-          <div onclick="switchTab('jharkhand')" class="stat-card bg-gradient-to-br from-amber-600 to-orange-800 text-white p-3.5 flex flex-col justify-between shadow-md cursor-pointer hover:shadow-lg">
+          <!-- Card 3: 50 History Sets / 5,000 MCQs -->
+          <div onclick="openTestsBySubject('HIST')" class="stat-card bg-gradient-to-br from-rose-700 to-amber-800 text-white p-3.5 flex flex-col justify-between shadow-md cursor-pointer hover:shadow-lg">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-2xl">🗺️</span>
-              <span class="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">जिला दर्शन</span>
+              <span class="text-2xl">📜</span>
+              <span class="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">50 सेट्स</span>
             </div>
             <div>
-              <div class="text-xl font-black">24 जिले व 5 मंडल</div>
-              <div class="text-[11px] text-amber-100 font-medium mt-0.5">खनिज, नदियां व सांख्यिकी</div>
+              <div class="text-xl font-black">5,000 History MCQs</div>
+              <div class="text-[11px] text-rose-100 font-medium mt-0.5">UPSC•CDS•PSC•SSC हल सहित</div>
             </div>
-            <div class="mt-3 pt-2 border-t border-white/20 flex items-center justify-between text-[11px] font-bold text-amber-200">
-              <span>जिला अध्ययन</span> <span>➔</span>
+            <div class="mt-3 pt-2 border-t border-white/20 flex items-center justify-between text-[11px] font-bold text-rose-100">
+              <span>इतिहास सेट खोलें</span> <span>➔</span>
             </div>
           </div>
 
@@ -468,8 +471,8 @@
             <div onclick="switchTab('tests')" class="action-tile flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold shrink-0">🎯</div>
               <div class="overflow-hidden">
-                <div class="text-xs font-bold text-slate-900 truncate">50 टेस्ट सीरीज़</div>
-                <div class="text-[10px] text-slate-500 truncate">5000 MCQs इंजन</div>
+                <div class="text-xs font-bold text-slate-900 truncate">150 टेस्ट सीरीज़</div>
+                <div class="text-[10px] text-slate-500 truncate">15,000 MCQs इंजन</div>
               </div>
             </div>
 
@@ -643,18 +646,21 @@
       <section id="sec_tests" class="hidden space-y-3">
         <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-3.5 rounded-2xl shadow-sm flex items-center justify-between gap-2">
           <div>
-            <h2 class="font-extrabold text-sm">🎯 प्रतियोगी परीक्षा टेस्ट सीरीज़ (100 सेट • 10,000 MCQs)</h2>
-            <p class="text-[11px] text-emerald-100">गणित (SSC, Bank, UPSC CSAT, CDS — 50 सेट) व झारखंड GK (50 सेट) • विस्तृत हल सहित</p>
+            <h2 class="font-extrabold text-sm">🎯 प्रतियोगी परीक्षा टेस्ट सीरीज़ (150 सेट • 15,000 MCQs)</h2>
+            <p class="text-[11px] text-emerald-100">इतिहास (UPSC, CDS, PSC, SSC — 50 सेट), गणित (50 सेट) व झारखंड GK (50 सेट) • विस्तृत हल सहित</p>
           </div>
           <div class="text-right shrink-0">
-            <span id="testsHeaderCountBadge" class="text-xs font-black bg-white/20 px-2.5 py-1 rounded-lg">100 सेट्स</span>
+            <span id="testsHeaderCountBadge" class="text-xs font-black bg-white/20 px-2.5 py-1 rounded-lg">150 सेट्स</span>
           </div>
         </div>
 
         <!-- Subject Filter Pills inside Tests Tab -->
         <div class="flex flex-wrap gap-2 items-center">
           <button id="testSubBtn_ALL" onclick="setTestSubjectFilter('ALL')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-900 text-white shadow-xs transition-all">
-            📚 सभी विषय (100 सेट)
+            📚 सभी विषय (150 सेट)
+          </button>
+          <button id="testSubBtn_HIST" onclick="setTestSubjectFilter('HIST')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-white text-slate-700 border border-slate-200 hover:border-rose-500 transition-all">
+            📜 इतिहास / History (50 सेट • 5,000 Qs)
           </button>
           <button id="testSubBtn_MATH" onclick="setTestSubjectFilter('MATH')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-white text-slate-700 border border-slate-200 hover:border-indigo-500 transition-all">
             🧮 गणित / Mathematics (50 सेट • 5,000 Qs)
@@ -7176,6 +7182,58 @@ const DEFAULT_FLASHCARDS = [
     // ==========================================
     // 7. CLIENT APPLICATION LOGIC & STATE ENGINE
     // ==========================================
+const HIST_TEST_MANIFEST = [
+  {"id":"TEST_HIST_SET_01","title":"इतिहास सेट 01: प्रागैतिहासिक काल एवं सिन्धु घाटी सभ्यता [UPSC/PSC/SSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_01.js","questions":null},
+  {"id":"TEST_HIST_SET_02","title":"इतिहास सेट 02: वैदिक संस्कृति एवं उत्तर-वैदिक समाज-अर्थव्यवस्था [UPSC/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_02.js","questions":null},
+  {"id":"TEST_HIST_SET_03","title":"इतिहास सेट 03: जैन एवं बौद्ध धर्म – दर्शन, संगीतियाँ व साहित्य [UPSC PYQ]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_03.js","questions":null},
+  {"id":"TEST_HIST_SET_04","title":"इतिहास सेट 04: शैव, वैष्णव, आजीवक एवं प्राचीन दार्शनिक संप्रदाय [PCS/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_04.js","questions":null},
+  {"id":"TEST_HIST_SET_05","title":"इतिहास सेट 05: महाजनपद काल एवं मगध साम्राज्य का उत्कर्ष [SSC/PSC/UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_05.js","questions":null},
+  {"id":"TEST_HIST_SET_06","title":"इतिहास सेट 06: मौर्य साम्राज्य I – चंद्रगुप्त, कौटिल्य व प्रशासनिक तंत्र [UPSC/PCS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_06.js","questions":null},
+  {"id":"TEST_HIST_SET_07","title":"इतिहास सेट 07: मौर्य साम्राज्य II – सम्राट अशोक, धम्म व अभिलेख [UPSC Prelims]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_07.js","questions":null},
+  {"id":"TEST_HIST_SET_08","title":"इतिहास सेट 08: मौर्योत्तर काल – शुंग, सातवाहन, इंडो-ग्रीक व कुषाण [CDS/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_08.js","questions":null},
+  {"id":"TEST_HIST_SET_09","title":"इतिहास सेट 09: संगम युग – चोल, चेर, पांड्य राजवंश व तमिल साहित्य [UPSC/CAPF]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_09.js","questions":null},
+  {"id":"TEST_HIST_SET_10","title":"इतिहास सेट 10: गुप्त साम्राज्य – प्रशासन, स्वर्ण युग, कला व विज्ञान [UPSC/SSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_10.js","questions":null},
+  {"id":"TEST_HIST_SET_11","title":"इतिहास सेट 11: गुप्तोत्तर काल – हर्षवर्धन, चालुक्य, पल्लव व राष्ट्रकूट [PCS/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_11.js","questions":null},
+  {"id":"TEST_HIST_SET_12","title":"इतिहास सेट 12: प्राचीन भारत – साहित्य, शब्दावली एवं स्थापत्य समीक्षा [UPSC/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_12.js","questions":null},
+  {"id":"TEST_HIST_SET_13","title":"इतिहास सेट 13: पूर्व-मध्यकाल – चोल साम्राज्य, स्थानीय स्वशासन व त्रिपक्षीय संघर्ष","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_13.js","questions":null},
+  {"id":"TEST_HIST_SET_14","title":"इतिहास सेट 14: अरब-तुर्क आक्रमण, राजपूत राज्य एवं सांस्कृतिक समन्वय [PCS/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_14.js","questions":null},
+  {"id":"TEST_HIST_SET_15","title":"इतिहास सेट 15: दिल्ली सल्तनत I – गुलाम व खिलजी वंश (इक्ता व बाजार नीति) [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_15.js","questions":null},
+  {"id":"TEST_HIST_SET_16","title":"इतिहास सेट 16: दिल्ली सल्तनत II – तुगलक, सैय्यद व लोदी वंश की नीतियाँ [PSC/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_16.js","questions":null},
+  {"id":"TEST_HIST_SET_17","title":"इतिहास सेट 17: सल्तनत कालीन प्रशासन, शब्दावली, स्थापत्य व विदेशी यात्री [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_17.js","questions":null},
+  {"id":"TEST_HIST_SET_18","title":"इतिहास सेट 18: विजयनगर एवं बहमनी साम्राज्य – कृष्णदेवराय व स्थापत्य [UPSC PYQ]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_18.js","questions":null},
+  {"id":"TEST_HIST_SET_19","title":"इतिहास सेट 19: भक्ति एवं सूफी आंदोलन – संत, दर्शन व सिलसिले [UPSC/CAPF/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_19.js","questions":null},
+  {"id":"TEST_HIST_SET_20","title":"इतिहास सेट 20: मुगल साम्राज्य I – बाबर, हुमायूँ व शेरशाह सूरी का प्रशासन [PCS/SSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_20.js","questions":null},
+  {"id":"TEST_HIST_SET_21","title":"इतिहास सेट 21: मुगल साम्राज्य II – अकबर (मनसबदारी, सुलह-ए-कुल व नवरत्न) [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_21.js","questions":null},
+  {"id":"TEST_HIST_SET_22","title":"इतिहास सेट 22: मुगल साम्राज्य III – जहाँगीर, शाहजहाँ व औरंगजेब [CDS/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_22.js","questions":null},
+  {"id":"TEST_HIST_SET_23","title":"इतिहास सेट 23: मुगल प्रशासन, भू-राजस्व, सिख गुरु व क्षेत्रीय राज्य [UPSC/PCS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_23.js","questions":null},
+  {"id":"TEST_HIST_SET_24","title":"इतिहास सेट 24: मराठा साम्राज्य – छत्रपति शिवाजी, अष्टप्रधान व पेशवा युग [UPSC/CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_24.js","questions":null},
+  {"id":"TEST_HIST_SET_25","title":"इतिहास सेट 25: यूरोपीय कंपनियों का आगमन एवं आंग्ल-फ्रांसीसी कर्नाटक युद्ध [PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_25.js","questions":null},
+  {"id":"TEST_HIST_SET_26","title":"इतिहास सेट 26: बंगाल विजय (प्लासी-बक्सर), आंग्ल-मैसूर व मराठा संघर्ष [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_26.js","questions":null},
+  {"id":"TEST_HIST_SET_27","title":"इतिहास सेट 27: ब्रिटिश विस्तार नीतियाँ – सहायक संधि व व्यपगत सिद्धांत [CDS/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_27.js","questions":null},
+  {"id":"TEST_HIST_SET_28","title":"इतिहास सेट 28: ब्रिटिश भू-राजस्व (स्थायी/रैयतवाड़ी) व धन-निष्कासन सिद्धांत [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_28.js","questions":null},
+  {"id":"TEST_HIST_SET_29","title":"इतिहास सेट 29: संवैधानिक विकास I – रेगुलेटिंग एक्ट 1773 से चार्टर एक्ट 1853 [PCS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_29.js","questions":null},
+  {"id":"TEST_HIST_SET_30","title":"इतिहास सेट 30: 1857 का महाविद्रोह – प्रमुख केंद्र, नेतृत्व, दमन व स्वरूप [UPSC/SSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_30.js","questions":null},
+  {"id":"TEST_HIST_SET_31","title":"इतिहास सेट 31: जनजातीय एवं किसान विद्रोह – संथाल, मुंडा, नील व मोपला [UPSC/JPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_31.js","questions":null},
+  {"id":"TEST_HIST_SET_32","title":"इतिहास सेट 32: सामाजिक-धार्मिक सुधार I – ब्रह्म समाज, आर्य समाज व रामकृष्ण मिशन","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_32.js","questions":null},
+  {"id":"TEST_HIST_SET_33","title":"इतिहास सेट 33: सामाजिक-धार्मिक सुधार II – सत्यशोधक, अलीगढ़, प्रेस व ब्रिटिश शिक्षा","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_33.js","questions":null},
+  {"id":"TEST_HIST_SET_34","title":"इतिहास सेट 34: कांग्रेस-पूर्व संगठन व भारतीय राष्ट्रीय कांग्रेस के प्रमुख अधिवेशन [PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_34.js","questions":null},
+  {"id":"TEST_HIST_SET_35","title":"इतिहास सेट 35: उदारवादी युग, बंगाल विभाजन व स्वदेशी-बहिष्कार आंदोलन [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_35.js","questions":null},
+  {"id":"TEST_HIST_SET_36","title":"इतिहास सेट 36: सूरत विभाजन, प्रारंभिक क्रांतिकारी, गदर पार्टी व होमरूल लीग [CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_36.js","questions":null},
+  {"id":"TEST_HIST_SET_37","title":"इतिहास सेट 37: गांधीवादी युग I – चंपारण, खेड़ा, रॉलेट, खिलाफत व असहयोग [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_37.js","questions":null},
+  {"id":"TEST_HIST_SET_38","title":"इतिहास सेट 38: स्वराज पार्टी, साइमन कमीशन, HSRA व सविनय अवज्ञा आंदोलन [UPSC/PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_38.js","questions":null},
+  {"id":"TEST_HIST_SET_39","title":"इतिहास सेट 39: गोलमेज सम्मेलन, पूना पैक्ट, प्रांतीय सरकारें व वामपंथी आंदोलन [CDS]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_39.js","questions":null},
+  {"id":"TEST_HIST_SET_40","title":"इतिहास सेट 40: द्वितीय विश्व युद्ध, अगस्त प्रस्ताव, क्रिप्स व भारत छोड़ो आंदोलन [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_40.js","questions":null},
+  {"id":"TEST_HIST_SET_41","title":"इतिहास सेट 41: सुभाष चंद्र बोस (INA), नौसेना विद्रोह, कैबिनेट मिशन व विभाजन [PSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_41.js","questions":null},
+  {"id":"TEST_HIST_SET_42","title":"इतिहास सेट 42: संवैधानिक विकास II (1858-1947), वायसराय व ऐतिहासिक नारे-ग्रंथ","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_42.js","questions":null},
+  {"id":"TEST_HIST_SET_43","title":"इतिहास सेट 43: भारतीय स्थापत्य, मंदिर शैलियाँ, गुफा कला एवं चित्रकला [UPSC Art]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_43.js","questions":null},
+  {"id":"TEST_HIST_SET_44","title":"इतिहास सेट 44: शास्त्रीय नृत्य, संगीत घराने, भाषाएँ एवं UNESCO विश्व धरोहर [UPSC]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_44.js","questions":null},
+  {"id":"TEST_HIST_SET_45","title":"इतिहास सेट 45: विश्व इतिहास – प्रबोधन, अमेरिकी-फ्रांसीसी-रूसी क्रांति व विश्व युद्ध","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/history/set_45.js","questions":null},
+  {"id":"TEST_HIST_SET_46","title":"इतिहास सेट 46: UPSC Prelims & CDS स्पेशल I – प्राचीन एवं मध्यकालीन भारत PYQ","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":100,"scriptPath":"sets/history/set_46.js","questions":null},
+  {"id":"TEST_HIST_SET_47","title":"इतिहास सेट 47: UPSC Prelims & CDS स्पेशल II – आधुनिक भारत एवं स्वतंत्रता संग्राम PYQ","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":100,"scriptPath":"sets/history/set_47.js","questions":null},
+  {"id":"TEST_HIST_SET_48","title":"इतिहास सेट 48: UPSC कथन-विश्लेषण एवं युग्म सुमेलन मास्टर सेट [Moderate-Tough]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":100,"scriptPath":"sets/history/set_48.js","questions":null},
+  {"id":"TEST_HIST_SET_49","title":"इतिहास सेट 49: कालानुक्रम (Chronology), प्रमुख संधियाँ, युद्ध एवं ऐतिहासिक साहित्य","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":100,"scriptPath":"sets/history/set_49.js","questions":null},
+  {"id":"TEST_HIST_SET_50","title":"इतिहास सेट 50: संपूर्ण इतिहास महा-अभ्यास मॉक टेस्ट [UPSC/PCS/CDS/SSC/Bank]","subject":"History","category":"HIST","totalQuestions":100,"timeMinutes":100,"scriptPath":"sets/history/set_50.js","questions":null}
+];
     const MATH_TEST_MANIFEST = [
       {"id":"TEST_MATH_SET_01","title":"गणित सेट 01: संख्या पद्धति I – विभाज्यता, इकाई अंक व शून्यों की संख्या [SSC/UPSC CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_01.js","questions":null},
       {"id":"TEST_MATH_SET_02","title":"गणित सेट 02: संख्या पद्धति II – शेषफल प्रमेय, फर्मा/यूलर व गुणनखंड [UPSC CSAT/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_02.js","questions":null},
@@ -7231,7 +7289,7 @@ const DEFAULT_FLASHCARDS = [
     // ==========================================
     // 7. CLIENT APPLICATION LOGIC & STATE ENGINE (V5.4 AUTH ZERO ERROR)
     // ==========================================
-    const CURRENT_DATA_VERSION = "PIONEER_V5.4_AUTH_5000_MCQ";
+    const CURRENT_DATA_VERSION = "PIONEER_V5.5_AUTH_150_SETS";
 
     // MASTER ADMIN CREDENTIALS
     const ADMIN_CREDENTIALS = {
@@ -7763,8 +7821,9 @@ const DEFAULT_FLASHCARDS = [
         state.jharkhandNotes = DEFAULT_JHARKHAND_NOTES;
         state.hindiNotes = DEFAULT_HINDI_NOTES;
         state.typingNotes = DEFAULT_TYPING_NOTES;
+        const histTests = (typeof HIST_TEST_MANIFEST !== "undefined" && Array.isArray(HIST_TEST_MANIFEST)) ? HIST_TEST_MANIFEST : [];
         const mathTests = (typeof MATH_TEST_MANIFEST !== "undefined" && Array.isArray(MATH_TEST_MANIFEST)) ? MATH_TEST_MANIFEST : [];
-        state.tests = [...DEFAULT_TESTS, ...mathTests];
+        state.tests = [...DEFAULT_TESTS, ...histTests, ...mathTests];
         state.flashcards = DEFAULT_FLASHCARDS;
 
         // Check authentication state
@@ -7801,7 +7860,7 @@ const DEFAULT_FLASHCARDS = [
       setEl("jharkhandBadge", "149p");
       setEl("hindiBadge", "27p");
       setEl("typingBadge", "18p");
-      setEl("testsBadge", state.tests ? state.tests.length : 100);
+      setEl("testsBadge", state.tests ? state.tests.length : 150);
     }
 
     function updateDashboardStats() {
@@ -8148,10 +8207,11 @@ const DEFAULT_FLASHCARDS = [
       const activeSubj = state.testSubjectFilter || "ALL";
       const allBtnClasses = {
         ALL: ["bg-emerald-700 text-white shadow-xs", "bg-slate-100 text-slate-700 hover:bg-slate-200"],
+        HIST: ["bg-rose-700 text-white shadow-xs", "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"],
         MATH: ["bg-indigo-700 text-white shadow-xs", "bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100"],
         JH: ["bg-emerald-700 text-white shadow-xs", "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"]
       };
-      ["ALL", "MATH", "JH"].forEach(k => {
+      ["ALL", "HIST", "MATH", "JH"].forEach(k => {
         const btn = document.getElementById(`testSubBtn_${k}`);
         if (!btn) return;
         const [activeCls, inactiveCls] = allBtnClasses[k];
@@ -8160,9 +8220,11 @@ const DEFAULT_FLASHCARDS = [
 
       const q = state.searchQuery.toLowerCase().trim();
       const filtered = state.tests.filter(t => {
+        const isHist = t.category === "HIST" || t.subject === "History";
         const isMath = t.category === "MATH" || t.subject === "Mathematics";
+        if (activeSubj === "HIST" && !isHist) return false;
         if (activeSubj === "MATH" && !isMath) return false;
-        if (activeSubj === "JH" && isMath) return false;
+        if (activeSubj === "JH" && (isMath || isHist)) return false;
         return !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase().includes(q) || (t.subject || "").toLowerCase().includes(q);
       });
 
@@ -8179,11 +8241,13 @@ const DEFAULT_FLASHCARDS = [
 
       container.innerHTML = filtered.map(test => {
         const bestScore = safeGet(`BEST_SCORE_${test.id}`, null);
+        const isHist = test.category === "HIST" || test.subject === "History";
         const isMath = test.category === "MATH" || test.subject === "Mathematics";
         const qCount = test.totalQuestions || (test.questions ? test.questions.length : 100);
-        const cardBorder = isMath ? "border-indigo-100 hover:border-indigo-500" : "border-emerald-100 hover:border-emerald-500";
-        const tagCls = isMath ? "bg-indigo-100 text-indigo-900" : "bg-emerald-100 text-emerald-900";
-        const btnCls = isMath ? "bg-indigo-700 hover:bg-indigo-800" : "bg-emerald-700 hover:bg-emerald-800";
+        const cardBorder = isHist ? "border-rose-100 hover:border-rose-500" : isMath ? "border-indigo-100 hover:border-indigo-500" : "border-emerald-100 hover:border-emerald-500";
+        const tagCls = isHist ? "bg-rose-100 text-rose-900" : isMath ? "bg-indigo-100 text-indigo-900" : "bg-emerald-100 text-emerald-900";
+        const btnCls = isHist ? "bg-rose-700 hover:bg-rose-800" : isMath ? "bg-indigo-700 hover:bg-indigo-800" : "bg-emerald-700 hover:bg-emerald-800";
+        const subNote = (isHist || isMath) ? "Solution सहित प्रतियोगी स्तर" : "प्रामाणिक वस्तुनिष्ठ टेस्ट";
         return `
           <div class="bg-white rounded-xl p-4 shadow-xs border ${cardBorder} hover:shadow-md transition-all flex flex-col justify-between">
             <div>
@@ -8192,7 +8256,7 @@ const DEFAULT_FLASHCARDS = [
                 <span class="text-xs text-slate-500 font-medium">⏱️ ${test.timeMinutes || 60} मिनट</span>
               </div>
               <h3 class="font-bold text-slate-900 text-sm leading-snug">${test.title}</h3>
-              <p class="text-xs text-slate-600 mt-2">कुल प्रश्न: <span class="font-bold text-slate-800">${qCount}</span> | ${isMath ? "Solution सहित प्रतियोगी स्तर" : "प्रामाणिक वस्तुनिष्ठ टेस्ट"}</p>
+              <p class="text-xs text-slate-600 mt-2">कुल प्रश्न: <span class="font-bold text-slate-800">${qCount}</span> | ${subNote}</p>
               ${bestScore ? `<div class="mt-2 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block">सर्वोत्तम स्कोर: ${bestScore}</div>` : ''}
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
