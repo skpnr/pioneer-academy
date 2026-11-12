@@ -311,7 +311,7 @@
         <span>🏠</span> <span>डैशबोर्ड</span>
       </button>
       <button id="tab_tests" onclick="switchTab('tests')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap text-amber-300 hover:text-white">
-        <span>🎯</span> <span>50 टेस्ट सीरीज़</span> <span id="testsBadge" class="bg-amber-500 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">50</span>
+        <span>🎯</span> <span>टेस्ट सीरीज़</span> <span id="testsBadge" class="bg-amber-500 text-slate-950 text-[10px] px-1.5 py-0.2 rounded-full font-black">100</span>
       </button>
       <button id="tab_jharkhand" onclick="switchTab('jharkhand')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap text-slate-300 hover:text-white">
         <span>🗺️</span> <span>झारखंड GK</span> <span id="jharkhandBadge" class="bg-slate-800 text-emerald-300 text-[10px] px-1.5 py-0.2 rounded-full font-bold border border-emerald-500/30">149p</span>
@@ -378,15 +378,15 @@
                 झारखंड प्रतियोगी परीक्षा मास्टर पोर्टल
               </h2>
               <p class="text-xs text-blue-200/90 max-w-lg leading-relaxed">
-                JSSC CGL, JPSC व राज्य स्तरीय परीक्षाओं हेतु 5,000 वस्तुनिष्ठ प्रश्नोत्तरी (50 सेट्स), 94 संपूर्ण अध्याय नोट्स एवं खोरठा भाषा का संपूर्ण अध्ययन केंद्र।
+                UPSC CSAT, CDS, SSC CGL, Bank PO, JPSC व JSSC CGL हेतु 10,000+ प्रश्नोत्तरी (50 गणित + 50 झारखंड GK सेट्स), संपूर्ण अध्याय नोट्स व हल सहित अभ्यास।
               </p>
             </div>
             <div class="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
-              <a href="PIONEER.apk" download="PIONEER.apk" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all border border-emerald-400/40 text-center">
-                <span>📲</span> <span>डाउनलोड Android APK</span>
-              </a>
-              <button onclick="switchTab('tests')" class="flex-1 sm:flex-initial bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all">
-                <span>🎯</span> <span>50 टेस्ट सीरीज़ दें</span>
+              <button onclick="openTestsBySubject('MATH')" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all border border-emerald-400/40 text-center">
+                <span>🧮</span> <span>50 गणित टेस्ट (5,000 Qs)</span>
+              </button>
+              <button onclick="openTestsBySubject('JH')" class="flex-1 sm:flex-initial bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-1.5 transition-all">
+                <span>🎯</span> <span>50 झारखंड टेस्ट दें</span>
               </button>
             </div>
           </div>
@@ -394,18 +394,18 @@
 
         <!-- 4 Vibrant Key Stat Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <!-- Card 1: 50 Tests / 5000 MCQs -->
-          <div onclick="switchTab('tests')" class="stat-card bg-gradient-to-br from-emerald-600 to-teal-800 text-white p-3.5 flex flex-col justify-between shadow-md cursor-pointer hover:shadow-lg">
+          <!-- Card 1: 100 Tests / 10,000 MCQs -->
+          <div onclick="openTestsBySubject('MATH')" class="stat-card bg-gradient-to-br from-emerald-600 to-teal-800 text-white p-3.5 flex flex-col justify-between shadow-md cursor-pointer hover:shadow-lg">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-2xl">🎯</span>
+              <span class="text-2xl">🧮</span>
               <span class="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">50 सेट्स</span>
             </div>
             <div>
-              <div class="text-xl font-black">5,000 MCQs</div>
-              <div class="text-[11px] text-emerald-100 font-medium mt-0.5">ग्रीन/रेड लाइव टेस्ट इंजन</div>
+              <div class="text-xl font-black">5,000 Math MCQs</div>
+              <div class="text-[11px] text-emerald-100 font-medium mt-0.5">SSC•Bank•UPSC•CDS हल सहित</div>
             </div>
             <div class="mt-3 pt-2 border-t border-white/20 flex items-center justify-between text-[11px] font-bold text-emerald-200">
-              <span>टेस्ट शुरू करें</span> <span>➔</span>
+              <span>गणित सेट खोलें</span> <span>➔</span>
             </div>
           </div>
 
@@ -638,18 +638,32 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- SECTION 1: 50 INTERACTIVE OBJECTIVE TESTS -->
+      <!-- SECTION 1: 100 SUBJECT-WISE OBJECTIVE TESTS -->
       <!-- ============================================== -->
       <section id="sec_tests" class="hidden space-y-3">
-        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-3.5 rounded-2xl shadow-sm flex items-center justify-between">
+        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-3.5 rounded-2xl shadow-sm flex items-center justify-between gap-2">
           <div>
-            <h2 class="font-extrabold text-sm">🎯 50 झारखंड वस्तुनिष्ठ टेस्ट सीरीज़ (5,000 MCQs)</h2>
-            <p class="text-[11px] text-emerald-100">सन्नी सर प्रामाणिक नोट्स आधारित • ग्रीन / रेड लाइव मूल्यांकन • -0.33 निगेटिव</p>
+            <h2 class="font-extrabold text-sm">🎯 प्रतियोगी परीक्षा टेस्ट सीरीज़ (100 सेट • 10,000 MCQs)</h2>
+            <p class="text-[11px] text-emerald-100">गणित (SSC, Bank, UPSC CSAT, CDS — 50 सेट) व झारखंड GK (50 सेट) • विस्तृत हल सहित</p>
           </div>
-          <div class="text-right">
-            <span class="text-xs font-black bg-white/20 px-2.5 py-1 rounded-lg">50 सेट्स</span>
+          <div class="text-right shrink-0">
+            <span id="testsHeaderCountBadge" class="text-xs font-black bg-white/20 px-2.5 py-1 rounded-lg">100 सेट्स</span>
           </div>
         </div>
+
+        <!-- Subject Filter Pills inside Tests Tab -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <button id="testSubBtn_ALL" onclick="setTestSubjectFilter('ALL')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-900 text-white shadow-xs transition-all">
+            📚 सभी विषय (100 सेट)
+          </button>
+          <button id="testSubBtn_MATH" onclick="setTestSubjectFilter('MATH')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-white text-slate-700 border border-slate-200 hover:border-indigo-500 transition-all">
+            🧮 गणित / Mathematics (50 सेट • 5,000 Qs)
+          </button>
+          <button id="testSubBtn_JH" onclick="setTestSubjectFilter('JH')" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-white text-slate-700 border border-slate-200 hover:border-emerald-500 transition-all">
+            🗺️ झारखंड GK (50 सेट • 5,000 Qs)
+          </button>
+        </div>
+
         <div id="testsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
       </section>
 
@@ -7162,6 +7176,58 @@ const DEFAULT_FLASHCARDS = [
     // ==========================================
     // 7. CLIENT APPLICATION LOGIC & STATE ENGINE
     // ==========================================
+    const MATH_TEST_MANIFEST = [
+      {"id":"TEST_MATH_SET_01","title":"गणित सेट 01: संख्या पद्धति I – विभाज्यता, इकाई अंक व शून्यों की संख्या [SSC/UPSC CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_01.js","questions":null},
+      {"id":"TEST_MATH_SET_02","title":"गणित सेट 02: संख्या पद्धति II – शेषफल प्रमेय, फर्मा/यूलर व गुणनखंड [UPSC CSAT/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_02.js","questions":null},
+      {"id":"TEST_MATH_SET_03","title":"गणित सेट 03: संख्या पद्धति III – करणी-घातांक, अंक पहेली व बीजगणितीय सरलीकरण [PCS/SSC]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_03.js","questions":null},
+      {"id":"TEST_MATH_SET_04","title":"गणित सेट 04: HCF एवं LCM – शेष आधारित, घंटियाँ, टाइल व सह-अभाज्य युग्म [CSAT/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_04.js","questions":null},
+      {"id":"TEST_MATH_SET_05","title":"गणित सेट 05: दशमलव, आवर्त भिन्न व सतत भिन्न सरलीकरण [SSC/Bank/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_05.js","questions":null},
+      {"id":"TEST_MATH_SET_06","title":"गणित सेट 06: प्रतिशतता I – आय-व्यय, जनसंख्या व मूल्य-खपत संतुलन [SSC/Bank PO]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_06.js","questions":null},
+      {"id":"TEST_MATH_SET_07","title":"गणित सेट 07: प्रतिशतता II – चुनाव (अवैध मत), परीक्षा व वेन आरेख [Bank Mains/CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_07.js","questions":null},
+      {"id":"TEST_MATH_SET_08","title":"गणित सेट 08: लाभ, हानि व बट्टा I – क्रमिक छूट एवं विक्रय तुलना [SSC CGL/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_08.js","questions":null},
+      {"id":"TEST_MATH_SET_09","title":"गणित सेट 09: लाभ-हानि II – बेईमान दुकानदार व उच्च-स्तरीय सौदे [SSC Tier-II/Bank]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_09.js","questions":null},
+      {"id":"TEST_MATH_SET_10","title":"गणित सेट 10: साधारण ब्याज (SI) एवं वार्षिक किस्त आधारित प्रश्न [SSC/Bank/PSC]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_10.js","questions":null},
+      {"id":"TEST_MATH_SET_11","title":"गणित सेट 11: चक्रवृद्धि ब्याज (CI), 2-3 वर्ष SI-CI अंतर व CI किस्तें [Bank PO/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_11.js","questions":null},
+      {"id":"TEST_MATH_SET_12","title":"गणित सेट 12: अनुपात, समानुपात, सिक्के व आयु संबंधी जटिल प्रश्न [SSC/CSAT/Bank]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_12.js","questions":null},
+      {"id":"TEST_MATH_SET_13","title":"गणित सेट 13: साझेदारी (Partnership) – समय-पूंजी परिवर्तन व लाभ विभाजन [Bank PO/SSC]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_13.js","questions":null},
+      {"id":"TEST_MATH_SET_14","title":"गणित सेट 14: मिश्रण एवं पृथ्थीकरण – क्रमिक प्रतिस्थापन व अनुपात [Bank Mains/CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_14.js","questions":null},
+      {"id":"TEST_MATH_SET_15","title":"गणित सेट 15: औसत (Average) – क्रिकेट पारी, त्रुटि सुधार व भारित औसत [SSC/CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_15.js","questions":null},
+      {"id":"TEST_MATH_SET_16","title":"गणित सेट 16: समय एवं कार्य I – दक्षता अनुपात, काम छोड़ना व ठेकेदारी [SSC CGL/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_16.js","questions":null},
+      {"id":"TEST_MATH_SET_17","title":"गणित सेट 17: समय एवं कार्य II – एकांतर दिन, पुरुष-महिला कार्य व मजदूरी [SSC Tier-II]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_17.js","questions":null},
+      {"id":"TEST_MATH_SET_18","title":"गणित सेट 18: नल एवं टंकी – रिसाव, समयबद्ध पाइप व धारिता [Bank PO/SSC/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_18.js","questions":null},
+      {"id":"TEST_MATH_SET_19","title":"गणित सेट 19: समय, चाल एवं दूरी I – देर-जल्दी, स्टॉपेज व औसत चाल [SSC/UPSC CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_19.js","questions":null},
+      {"id":"TEST_MATH_SET_20","title":"गणित सेट 20: समय, चाल व दूरी II – रेलगाड़ियाँ व सापेक्ष गति [SSC/Bank/Railway]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_20.js","questions":null},
+      {"id":"TEST_MATH_SET_21","title":"गणित सेट 21: नाव-धारा एवं वृत्ताकार ट्रैक रेस [SSC Tier-II/Bank PO/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_21.js","questions":null},
+      {"id":"TEST_MATH_SET_22","title":"गणित सेट 22: बीजगणित I – उच्च घात (x⁵+1/x⁵), त्रिक सर्वसमिका व चक्रीय व्यंजक [SSC Tier-II]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_22.js","questions":null},
+      {"id":"TEST_MATH_SET_23","title":"गणित सेट 23: बीजगणित II – बहुपद शेषफल प्रमेय, युगपत समीकरण व शर्तें [CDS/SSC]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_23.js","questions":null},
+      {"id":"TEST_MATH_SET_24","title":"गणित सेट 24: द्विघात समीकरण व Bank PO x-y असमानता तुलना [Bank PO/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_24.js","questions":null},
+      {"id":"TEST_MATH_SET_25","title":"गणित सेट 25: लघुगणक (Logarithms), घातांक समीकरण व आव्यूह सारणिक [UPSC CDS/NDA]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_25.js","questions":null},
+      {"id":"TEST_MATH_SET_26","title":"गणित सेट 26: श्रेणियाँ (AP, अनंत GP) व Bank PO संख्या श्रृंखला [Bank PO/CDS/CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_26.js","questions":null},
+      {"id":"TEST_MATH_SET_27","title":"गणित सेट 27: समुच्चय सिद्धांत (3-समुच्चय वेन आरेख) व तार्किक संख्याएं [UPSC CSAT/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_27.js","questions":null},
+      {"id":"TEST_MATH_SET_28","title":"गणित सेट 28: क्रमचय एवं संचय – शब्द व्यवस्था, अंक व समिति निर्माण [CSAT/Bank Mains]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_28.js","questions":null},
+      {"id":"TEST_MATH_SET_29","title":"गणित सेट 29: प्रायिकता (Probability) – पासे, गेंद व स्वतंत्र घटनाएं [Bank PO/CSAT/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_29.js","questions":null},
+      {"id":"TEST_MATH_SET_30","title":"गणित सेट 30: ज्यामिति I – सम बहुभुज कोण, विकर्ण व त्रिभुज केंद्र [SSC CGL/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_30.js","questions":null},
+      {"id":"TEST_MATH_SET_31","title":"गणित सेट 31: ज्यामिति II – समरूप त्रिभुज, अंतः/बाह्य कोण समद्विभाजक व जीवा [SSC Tier-II]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_31.js","questions":null},
+      {"id":"TEST_MATH_SET_32","title":"गणित सेट 32: ज्यामिति III – वृत्त स्पर्श रेखा, चक्रीय चतुर्भुज व एकांतर खंड [SSC/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_32.js","questions":null},
+      {"id":"TEST_MATH_SET_33","title":"गणित सेट 33: क्षेत्रमिति 2D – समचतुर्भुज, समलंब व वृत्ताकार पहिया [SSC CGL/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_33.js","questions":null},
+      {"id":"TEST_MATH_SET_34","title":"गणित सेट 34: क्षेत्रमिति 3D I – घनाभ विकर्ण, पृष्ठीय क्षेत्रफल व आयतन वृद्धि% [SSC Tier-II]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_34.js","questions":null},
+      {"id":"TEST_MATH_SET_35","title":"गणित सेट 35: क्षेत्रमिति 3D II – शंकु छिन्नक (Frustum), गोला पिघलाना व बेलन [SSC/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_35.js","questions":null},
+      {"id":"TEST_MATH_SET_36","title":"गणित सेट 36: त्रिकोणमिति I – सर्वसमिकाएं, त्रिक प्रणाली व अधिकतम-न्यूनतम मान [SSC/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_36.js","questions":null},
+      {"id":"TEST_MATH_SET_37","title":"गणित सेट 37: त्रिकोणमिति II – ऊँचाई व दूरी (उन्नयन/अवनमन कोण परिवर्तन) [SSC Tier-II/CDS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_37.js","questions":null},
+      {"id":"TEST_MATH_SET_38","title":"गणित सेट 38: निर्देशांक ज्यामिति – त्रिभुज क्षेत्रफल, लंब रेखा ढाल व आव्यूह [CDS/SSC/PCS]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_38.js","questions":null},
+      {"id":"TEST_MATH_SET_39","title":"गणित सेट 39: सांख्यिकी – माध्य, माध्यिका, बहुलक, प्रसरण व मानक विचलन [CDS/SSC Tier-II]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_39.js","questions":null},
+      {"id":"TEST_MATH_SET_40","title":"गणित सेट 40: घड़ी एवं कैलेंडर – कोण, विषम दिन व लीप शताब्दी [UPSC CSAT/PSC/SSC]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_40.js","questions":null},
+      {"id":"TEST_MATH_SET_41","title":"गणित सेट 41: आंकड़ा विश्लेषण I – तालिका DI प्रतिशत व औसत विश्लेषण [Bank PO/CSAT]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_41.js","questions":null},
+      {"id":"TEST_MATH_SET_42","title":"गणित सेट 42: आंकड़ा विश्लेषण II – DI अनुपात, लाभ-हानि व मात्रा तुलना [Bank PO Mains]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_42.js","questions":null},
+      {"id":"TEST_MATH_SET_43","title":"गणित सेट 43: आंकड़ा पर्याप्तता (Data Sufficiency) व मात्रा तुलना विशेष [UPSC CSAT/Bank]","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_43.js","questions":null},
+      {"id":"TEST_MATH_SET_44","title":"गणित सेट 44: UPSC CSAT स्पेशल I – कथन प्रश्न, संख्या सिद्धांत व तार्किक अंकगणित","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":120,"scriptPath":"sets/math/set_44.js","questions":null},
+      {"id":"TEST_MATH_SET_45","title":"गणित सेट 45: UPSC CSAT स्पेशल II – क्रमचय, प्रायिकता, मिश्रण व चाल-दूरी कठिन तर्क","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":120,"scriptPath":"sets/math/set_45.js","questions":null},
+      {"id":"TEST_MATH_SET_46","title":"गणित सेट 46: UPSC CDS स्पेशल I – उच्च बीजगणित, लघुगणक, त्रिकोणमिति व ज्यामिति","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":120,"scriptPath":"sets/math/set_46.js","questions":null},
+      {"id":"TEST_MATH_SET_47","title":"गणित सेट 47: UPSC CDS स्पेशल II – क्षेत्रमिति 3D, सांख्यिकी, श्रेणी व कठिन अभ्यास","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":120,"scriptPath":"sets/math/set_47.js","questions":null},
+      {"id":"TEST_MATH_SET_48","title":"गणित सेट 48: SSC CGL Tier-II हाई-लेवल मॉक – अंकगणित + एडवांस मैथ्स","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_48.js","questions":null},
+      {"id":"TEST_MATH_SET_49","title":"गणित सेट 49: IBPS / SBI Bank PO Mains मॉक – DI, द्विघात, श्रेणी व अर्थमैटिक","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":90,"scriptPath":"sets/math/set_49.js","questions":null},
+      {"id":"TEST_MATH_SET_50","title":"गणित सेट 50: महासंग्राम ग्रैंड मॉक – UPSC CSAT + CDS + SSC Tier-II + Bank + PCS","subject":"Mathematics","category":"MATH","totalQuestions":100,"timeMinutes":120,"scriptPath":"sets/math/set_50.js","questions":null}
+    ];
     // ==========================================
     // 7. CLIENT APPLICATION LOGIC & STATE ENGINE (V5.4 AUTH ZERO ERROR)
     // ==========================================
@@ -7672,6 +7738,7 @@ const DEFAULT_FLASHCARDS = [
     let state = {
       activeTab: "dashboard",
       filterCategory: "ALL",
+      testSubjectFilter: "ALL",
       searchQuery: "",
       currentUser: null, // { role: 'admin'|'student', mobile: '...', name: '...' }
       khorthaNotes: [],
@@ -7696,7 +7763,8 @@ const DEFAULT_FLASHCARDS = [
         state.jharkhandNotes = DEFAULT_JHARKHAND_NOTES;
         state.hindiNotes = DEFAULT_HINDI_NOTES;
         state.typingNotes = DEFAULT_TYPING_NOTES;
-        state.tests = DEFAULT_TESTS;
+        const mathTests = (typeof MATH_TEST_MANIFEST !== "undefined" && Array.isArray(MATH_TEST_MANIFEST)) ? MATH_TEST_MANIFEST : [];
+        state.tests = [...DEFAULT_TESTS, ...mathTests];
         state.flashcards = DEFAULT_FLASHCARDS;
 
         // Check authentication state
@@ -7733,7 +7801,7 @@ const DEFAULT_FLASHCARDS = [
       setEl("jharkhandBadge", "149p");
       setEl("hindiBadge", "27p");
       setEl("typingBadge", "18p");
-      setEl("testsBadge", state.tests ? state.tests.length : 50);
+      setEl("testsBadge", state.tests ? state.tests.length : 100);
     }
 
     function updateDashboardStats() {
@@ -7742,7 +7810,9 @@ const DEFAULT_FLASHCARDS = [
 
       let attempted = 0;
       let highest = 0;
+      let totalQuestions = 0;
       state.tests.forEach(t => {
+        totalQuestions += (t.totalQuestions || (t.questions ? t.questions.length : 100));
         const score = safeGet(`BEST_SCORE_${t.id}`, null);
         if (score) {
           attempted++;
@@ -7751,10 +7821,11 @@ const DEFAULT_FLASHCARDS = [
         }
       });
 
+      const totalSets = state.tests.length;
       if (attempted > 0) {
-        summaryEl.innerHTML = `कुल 50 में से <strong>${attempted} टेस्ट</strong> हल किए • आपका सर्वोत्तम स्कोर: <strong class="text-amber-400">${highest} अंक</strong>`;
+        summaryEl.innerHTML = `कुल ${totalSets} में से <strong>${attempted} टेस्ट</strong> हल किए • आपका सर्वोत्तम स्कोर: <strong class="text-amber-400">${highest} अंक</strong>`;
       } else {
-        summaryEl.innerHTML = `कुल 50 टेस्ट सेट्स (5,000 MCQs) उपलब्ध • अभी टेस्ट देकर अपना स्कोर जांचें`;
+        summaryEl.innerHTML = `कुल ${totalSets} टेस्ट सेट्स (${totalQuestions.toLocaleString("en-IN")} MCQs) उपलब्ध • अभी टेस्ट देकर अपना स्कोर जांचें`;
       }
     }
 
@@ -8006,29 +8077,127 @@ const DEFAULT_FLASHCARDS = [
     // ====================================================
     // 50 TEST SERIES ENGINE (GREEN / RED LOGIC)
     // ====================================================
+    window.__PIONEER_LOADED_SETS = window.__PIONEER_LOADED_SETS || {};
+    window.__PIONEER_REGISTER_TEST = function(testId, questions) {
+      window.__PIONEER_LOADED_SETS[testId] = questions;
+      if (state && Array.isArray(state.tests)) {
+        const found = state.tests.find(t => t.id === testId);
+        if (found) found.questions = questions;
+      }
+    };
+
+    function ensureTestLoaded(test) {
+      if (!test) return Promise.reject(new Error("Invalid test"));
+      if (Array.isArray(test.questions) && test.questions.length > 0) {
+        return Promise.resolve(test.questions);
+      }
+      if (window.__PIONEER_LOADED_SETS && Array.isArray(window.__PIONEER_LOADED_SETS[test.id])) {
+        test.questions = window.__PIONEER_LOADED_SETS[test.id];
+        return Promise.resolve(test.questions);
+      }
+      if (!test.scriptPath) {
+        return Promise.reject(new Error("Missing scriptPath for " + test.id));
+      }
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[data-test-id="${test.id}"]`);
+        if (existing) {
+          if (Array.isArray(test.questions) && test.questions.length > 0) return resolve(test.questions);
+          if (window.__PIONEER_LOADED_SETS[test.id]) {
+            test.questions = window.__PIONEER_LOADED_SETS[test.id];
+            return resolve(test.questions);
+          }
+          existing.addEventListener("load", () => {
+            test.questions = window.__PIONEER_LOADED_SETS[test.id] || test.questions;
+            resolve(test.questions);
+          });
+          existing.addEventListener("error", () => reject(new Error("Failed to load " + test.scriptPath)));
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = test.scriptPath;
+        s.async = false;
+        s.dataset.testId = test.id;
+        s.onload = () => {
+          const qs = (window.__PIONEER_LOADED_SETS && window.__PIONEER_LOADED_SETS[test.id]) || test.questions;
+          if (Array.isArray(qs) && qs.length > 0) {
+            test.questions = qs;
+            resolve(qs);
+          } else {
+            reject(new Error("Test script did not register questions: " + test.id));
+          }
+        };
+        s.onerror = () => reject(new Error("Failed to load test script: " + test.scriptPath));
+        document.head.appendChild(s);
+      });
+    }
+
+    function setTestSubjectFilter(subj) {
+      state.testSubjectFilter = subj || "ALL";
+      renderTestsList();
+    }
+
+    function openTestsBySubject(subj) {
+      state.testSubjectFilter = subj || "ALL";
+      switchTab("tests");
+    }
+
     function renderTestsList() {
       const container = document.getElementById("testsContainer");
       if (!container) return;
 
+      const activeSubj = state.testSubjectFilter || "ALL";
+      const allBtnClasses = {
+        ALL: ["bg-emerald-700 text-white shadow-xs", "bg-slate-100 text-slate-700 hover:bg-slate-200"],
+        MATH: ["bg-indigo-700 text-white shadow-xs", "bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100"],
+        JH: ["bg-emerald-700 text-white shadow-xs", "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"]
+      };
+      ["ALL", "MATH", "JH"].forEach(k => {
+        const btn = document.getElementById(`testSubBtn_${k}`);
+        if (!btn) return;
+        const [activeCls, inactiveCls] = allBtnClasses[k];
+        btn.className = `px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${activeSubj === k ? activeCls : inactiveCls}`;
+      });
+
       const q = state.searchQuery.toLowerCase().trim();
-      const filtered = state.tests.filter(t => !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase().includes(q));
+      const filtered = state.tests.filter(t => {
+        const isMath = t.category === "MATH" || t.subject === "Mathematics";
+        if (activeSubj === "MATH" && !isMath) return false;
+        if (activeSubj === "JH" && isMath) return false;
+        return !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase().includes(q) || (t.subject || "").toLowerCase().includes(q);
+      });
+
+      const headerBadge = document.getElementById("testsHeaderCountBadge");
+      if (headerBadge) {
+        const totalQ = filtered.reduce((sum, t) => sum + (t.totalQuestions || (t.questions ? t.questions.length : 100)), 0);
+        headerBadge.innerText = `${filtered.length} टेस्ट सेट्स | ${totalQ.toLocaleString("en-IN")} MCQs`;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 text-sm bg-white rounded-xl border border-slate-200">कोई टेस्ट सेट नहीं मिला।</div>`;
+        return;
+      }
 
       container.innerHTML = filtered.map(test => {
         const bestScore = safeGet(`BEST_SCORE_${test.id}`, null);
+        const isMath = test.category === "MATH" || test.subject === "Mathematics";
+        const qCount = test.totalQuestions || (test.questions ? test.questions.length : 100);
+        const cardBorder = isMath ? "border-indigo-100 hover:border-indigo-500" : "border-emerald-100 hover:border-emerald-500";
+        const tagCls = isMath ? "bg-indigo-100 text-indigo-900" : "bg-emerald-100 text-emerald-900";
+        const btnCls = isMath ? "bg-indigo-700 hover:bg-indigo-800" : "bg-emerald-700 hover:bg-emerald-800";
         return `
-          <div class="bg-white rounded-xl p-4 shadow-xs border border-emerald-100 hover:shadow-md hover:border-emerald-500 transition-all flex flex-col justify-between">
+          <div class="bg-white rounded-xl p-4 shadow-xs border ${cardBorder} hover:shadow-md transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="px-2 py-0.5 text-[10px] font-black rounded bg-emerald-100 text-emerald-900 uppercase">${test.subject}</span>
+                <span class="px-2 py-0.5 text-[10px] font-black rounded ${tagCls} uppercase">${test.subject}</span>
                 <span class="text-xs text-slate-500 font-medium">⏱️ ${test.timeMinutes || 60} मिनट</span>
               </div>
               <h3 class="font-bold text-slate-900 text-sm leading-snug">${test.title}</h3>
-              <p class="text-xs text-slate-600 mt-2">कुल प्रश्न: <span class="font-bold text-slate-800">${test.questions.length}</span> | प्रामाणिक वस्तुनिष्ठ टेस्ट</p>
+              <p class="text-xs text-slate-600 mt-2">कुल प्रश्न: <span class="font-bold text-slate-800">${qCount}</span> | ${isMath ? "Solution सहित प्रतियोगी स्तर" : "प्रामाणिक वस्तुनिष्ठ टेस्ट"}</p>
               ${bestScore ? `<div class="mt-2 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block">सर्वोत्तम स्कोर: ${bestScore}</div>` : ''}
             </div>
             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
               <span class="text-[11px] text-slate-500 font-medium">नेगेटिव: -0.33</span>
-              <button onclick="startInteractiveTest('${test.id}')" class="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1 transition-all">
+              <button onclick="startInteractiveTest('${test.id}')" class="px-3.5 py-1.5 ${btnCls} text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1 transition-all">
                 <span>🚀 टेस्ट शुरू करें</span>
               </button>
             </div>
@@ -8037,7 +8206,7 @@ const DEFAULT_FLASHCARDS = [
       }).join("");
     }
 
-    function startInteractiveTest(testId) {
+    async function startInteractiveTest(testId) {
       if (!testId || !state.tests) return;
 
       if (state.currentUser && state.currentUser.role === "student") {
@@ -8061,6 +8230,14 @@ const DEFAULT_FLASHCARDS = [
       }
       if (!test) {
         console.warn("Test not found for ID:", testId);
+        return;
+      }
+
+      try {
+        await ensureTestLoaded(test);
+      } catch (err) {
+        console.error(err);
+        alert("टेस्ट सेट लोड करने में त्रुटि हुई। कृपया इंटरनेट/ऑफ़लाइन फ़ाइल जांचें और पुनः प्रयास करें।");
         return;
       }
 
