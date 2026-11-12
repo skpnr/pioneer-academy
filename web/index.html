@@ -158,7 +158,7 @@
               <input type="tel" id="studentLoginPhone" maxlength="10" placeholder="10-अंकीय मोबाइल नंबर दर्ज करें" 
                 class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-12 pr-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
             </div>
-            <p class="text-[11px] text-slate-400">केवल अधिकृत छात्रों के पंजीकृत मोबाइल नंबर पर ही OTP भेजा जाएगा।</p>
+            <p class="text-[11px] text-slate-400">केवल अधिकृत छात्रों के पंजीकृत मोबाइल नंबर पर ही OTP भेजा जाएगा • <span class="text-amber-300 font-semibold">1 नंबर = 1 सक्रिय मोबाइल सुरक्षा</span></p>
           </div>
 
           <button id="btnRequestOtp" onclick="requestStudentOtp()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
@@ -202,7 +202,11 @@
             </div>
           </div>
 
-          <button onclick="verifyStudentOtp()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+          <div id="otherDeviceActiveNotice" class="hidden p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-200 text-[11px] leading-relaxed font-medium">
+            ⚠️ यह नंबर अभी किसी दूसरे मोबाइल पर लॉगिन है। यहाँ OTP सत्यापित करते ही पिछला मोबाइल स्वतः लॉगआउट हो जाएगा।
+          </div>
+
+          <button id="btnVerifyOtp" onclick="verifyStudentOtp()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
             <span>✅</span> <span>सत्यापित करें और प्रवेश करें</span>
           </button>
         </div>
@@ -7267,10 +7271,12 @@ const DEFAULT_FLASHCARDS = [
       if (cleanPhone.length !== 10) return false;
       const list = getAuthorizedStudents();
       const existingIdx = list.findIndex(s => s.mobile === cleanPhone);
+      const existingPassword = (existingIdx >= 0 && list[existingIdx].password) ? list[existingIdx].password : "070719";
       const nowStr = new Date().toISOString().split("T")[0];
       const item = {
         mobile: cleanPhone,
         name: (name && name.trim()) || "अधिकृत छात्र",
+        password: existingPassword,
         activationKey: key || generateActivationKey(cleanPhone),
         addedAt: nowStr,
         status: "ACTIVE"
@@ -7293,24 +7299,236 @@ const DEFAULT_FLASHCARDS = [
       deleteStudentFromSupabase(cleanPhone);
     }
 
-    // Session Management
+    // Session Management & Single Active Device Lock (Students)
+    let fallbackRuntimeDeviceId = null;
+    let sessionHeartbeatTimer = null;
+    let isSessionCheckInFlight = false;
+    let sessionListenersAttached = false;
+
+    function getOrCreateDeviceId() {
+      let id = safeGet("PIONEER_DEVICE_ID", "");
+      if (!id || typeof id !== "string" || id.length < 6) {
+        if (!fallbackRuntimeDeviceId) {
+          fallbackRuntimeDeviceId = "d" + Math.random().toString(36).slice(2, 10);
+        }
+        id = fallbackRuntimeDeviceId;
+        safeSet("PIONEER_DEVICE_ID", id);
+      }
+      return id.replace(/\|/g, "").slice(0, 12);
+    }
+
+    function generateSessionToken() {
+      const t = Date.now().toString(36).slice(-5);
+      const r = Math.random().toString(36).slice(2, 8);
+      return (t + r).replace(/\|/g, "").slice(0, 12);
+    }
+
+    function parseSessionTag(val) {
+      if (!val || typeof val !== "string" || !val.startsWith("S1|")) return null;
+      const parts = val.split("|");
+      if (parts.length < 3) return null;
+      return { raw: val, deviceId: parts[1], sessionToken: parts[2] };
+    }
+
+    function updateLocalStudentPasswordField(mobile, newPassVal) {
+      const list = getAuthorizedStudents();
+      const idx = list.findIndex(s => s.mobile === mobile);
+      if (idx >= 0) {
+        list[idx].password = newPassVal;
+        saveAuthorizedStudents(list);
+      }
+    }
+
+    async function claimActiveDeviceSessionInSupabase(mobile, sessionTag) {
+      updateLocalStudentPasswordField(mobile, sessionTag);
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 5000);
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${mobile}`, {
+          method: "PATCH",
+          signal: ctrl.signal,
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ password: sessionTag })
+        });
+        return res.ok;
+      } catch (e) {
+        console.warn("Supabase active session claim skipped (offline):", e);
+        return false;
+      } finally {
+        clearTimeout(tid);
+      }
+    }
+
+    function releaseActiveDeviceSessionInSupabase(mobile, sessionTag) {
+      if (!mobile || !sessionTag) return;
+      try {
+        fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${mobile}&password=eq.${encodeURIComponent(sessionTag)}`, {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ password: "LOGGED_OUT" })
+        }).catch(() => {});
+      } catch (_) {}
+    }
+
+    function forceLogoutToGate(reasonMsg) {
+      ["noteModal", "studySheetModal", "examModal", "importerModal"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("hidden");
+      });
+      if (window.speechSynthesis) {
+        try { window.speechSynthesis.cancel(); } catch (_) {}
+      }
+      clearAuthSession(true);
+      switchLoginMode("student");
+      resetStudentOtpForm();
+      if (reasonMsg) showAuthError(reasonMsg);
+    }
+
+    async function verifyActiveDeviceSession(reason) {
+      const sess = state.currentUser;
+      if (!sess || sess.role !== "student") return true;
+      if (isSessionCheckInFlight) return true;
+
+      isSessionCheckInFlight = true;
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 4500);
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${sess.mobile}&select=mobile,status,password`, {
+          cache: "no-store",
+          signal: ctrl.signal,
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+          }
+        });
+        if (!res.ok) return true;
+        const rows = await res.json();
+        if (!Array.isArray(rows)) return true;
+
+        // Re-check session did not change mid-flight
+        if (!state.currentUser || state.currentUser.mobile !== sess.mobile || state.currentUser.sessionTag !== sess.sessionTag) {
+          return true;
+        }
+
+        if (rows.length === 0 || rows[0].status !== "ACTIVE") {
+          forceLogoutToGate(`मोबाइल नंबर ${sess.mobile} को एडमिन द्वारा निष्क्रिय या हटा दिया गया है।`);
+          return false;
+        }
+
+        const cloudTag = rows[0].password || "";
+        updateLocalStudentPasswordField(sess.mobile, cloudTag);
+
+        if (!sess.sessionTag) {
+          if (cloudTag.startsWith("S1|") || cloudTag === "LOGGED_OUT") {
+            forceLogoutToGate("सुरक्षा अपडेट (1-डिवाइस नियम): कृपया पुनः OTP से लॉगिन करें।");
+            return false;
+          }
+          return true;
+        }
+
+        if (cloudTag.startsWith("S1|") && cloudTag !== sess.sessionTag) {
+          forceLogoutToGate(`आपका यह मोबाइल नंबर (${sess.mobile}) किसी दूसरे मोबाइल/डिवाइस पर लॉगिन हो चुका है! एक मोबाइल नंबर से एक समय में केवल एक ही डिवाइस पर लॉगिन मान्य है।`);
+          return false;
+        }
+
+        if (cloudTag === "LOGGED_OUT") {
+          forceLogoutToGate(`मोबाइल नंबर (${sess.mobile}) का लॉगिन सत्र समाप्त कर दिया गया है। कृपया पुनः OTP से लॉगिन करें।`);
+          return false;
+        }
+
+        if (cloudTag === "070719" || !cloudTag) {
+          // Heal session lock up to Supabase if row had legacy placeholder
+          claimActiveDeviceSessionInSupabase(sess.mobile, sess.sessionTag);
+        }
+        return true;
+      } catch (e) {
+        return true; // Network offline / timeout -> allow offline mode
+      } finally {
+        clearTimeout(tid);
+        isSessionCheckInFlight = false;
+      }
+    }
+
+    function attachSessionLifecycleListeners() {
+      if (sessionListenersAttached) return;
+      sessionListenersAttached = true;
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && state.currentUser && state.currentUser.role === "student") {
+          verifyActiveDeviceSession("resume");
+        }
+      });
+      window.addEventListener("focus", () => {
+        if (state.currentUser && state.currentUser.role === "student") {
+          verifyActiveDeviceSession("focus");
+        }
+      });
+      window.addEventListener("online", () => {
+        if (state.currentUser && state.currentUser.role === "student") {
+          verifyActiveDeviceSession("online");
+        }
+      });
+    }
+
+    function startSessionHeartbeat() {
+      stopSessionHeartbeat();
+      attachSessionLifecycleListeners();
+      if (state.currentUser && state.currentUser.role === "student") {
+        sessionHeartbeatTimer = setInterval(() => {
+          if (document.visibilityState !== "hidden" && state.currentUser && state.currentUser.role === "student") {
+            verifyActiveDeviceSession("heartbeat");
+          }
+        }, 6000);
+      }
+    }
+
+    function stopSessionHeartbeat() {
+      if (sessionHeartbeatTimer) {
+        clearInterval(sessionHeartbeatTimer);
+        sessionHeartbeatTimer = null;
+      }
+    }
+
     function getAuthSession() {
       return safeGet("PIONEER_AUTH_SESSION", null);
     }
 
-    function setAuthSession(role, mobile, name) {
+    function setAuthSession(role, mobile, name, meta = null) {
       const sess = {
         role: role,
         mobile: mobile,
         name: name,
         loginAt: new Date().toISOString()
       };
+      if (meta && meta.deviceId) sess.deviceId = meta.deviceId;
+      if (meta && meta.sessionToken) sess.sessionToken = meta.sessionToken;
+      if (meta && meta.sessionTag) sess.sessionTag = meta.sessionTag;
+
       safeSet("PIONEER_AUTH_SESSION", sess);
       state.currentUser = sess;
       applyAuthUI();
+      if (role === "student") {
+        startSessionHeartbeat();
+      } else {
+        stopSessionHeartbeat();
+      }
     }
 
-    function clearAuthSession() {
+    function clearAuthSession(skipCloudRelease = false) {
+      const prev = state.currentUser;
+      stopSessionHeartbeat();
+      if (!skipCloudRelease && prev && prev.role === "student" && prev.mobile && prev.sessionTag) {
+        releaseActiveDeviceSessionInSupabase(prev.mobile, prev.sessionTag);
+        updateLocalStudentPasswordField(prev.mobile, "LOGGED_OUT");
+      }
       try { localStorage.removeItem("PIONEER_AUTH_SESSION"); } catch(e){}
       state.currentUser = null;
       state.isAdminUnlocked = false;
@@ -7360,6 +7578,11 @@ const DEFAULT_FLASHCARDS = [
         updateDashboardStats();
         applyAuthUI();
         switchTab("dashboard");
+
+        if (savedSession && savedSession.role === "student") {
+          startSessionHeartbeat();
+          verifyActiveDeviceSession("startup");
+        }
       } catch (err) {
         console.error("Critical error in initAppData:", err);
         switchTab("dashboard");
@@ -7402,6 +7625,10 @@ const DEFAULT_FLASHCARDS = [
       if (tabId === "admin" && (!state.currentUser || state.currentUser.role !== "admin")) {
         alert("यह अनुभाग केवल अधिकृत एडमिन के लिए आरक्षित है।");
         return;
+      }
+
+      if (state.currentUser && state.currentUser.role === "student") {
+        verifyActiveDeviceSession("tab");
       }
 
       state.activeTab = tabId;
@@ -7674,6 +7901,10 @@ const DEFAULT_FLASHCARDS = [
 
     function startInteractiveTest(testId) {
       if (!testId || !state.tests) return;
+
+      if (state.currentUser && state.currentUser.role === "student") {
+        verifyActiveDeviceSession("test");
+      }
 
       // Robust matching: exact, lowercase, or numeric match
       let test = state.tests.find(t => t.id === testId);
@@ -8085,8 +8316,10 @@ const DEFAULT_FLASHCARDS = [
       hideAuthError();
       const stepMob = document.getElementById("studentStepMobile");
       const stepOtp = document.getElementById("studentStepOtp");
+      const otherNotice = document.getElementById("otherDeviceActiveNotice");
       if (stepMob) stepMob.classList.remove("hidden");
       if (stepOtp) stepOtp.classList.add("hidden");
+      if (otherNotice) otherNotice.classList.add("hidden");
       if (otpCountdownTimer) {
         clearInterval(otpCountdownTimer);
         otpCountdownTimer = null;
@@ -8115,8 +8348,10 @@ const DEFAULT_FLASHCARDS = [
 
       // 1. LIVE REAL-TIME CHECK: First check live Supabase database so newly added numbers work immediately!
       let found = null;
+      let isBlockedInCloud = false;
       try {
         const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=*`, {
+          cache: "no-store",
           headers: {
             "apikey": SUPABASE_CONFIG.anonKey,
             "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
@@ -8124,23 +8359,33 @@ const DEFAULT_FLASHCARDS = [
         });
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data) && data.length > 0 && data[0].status === "ACTIVE") {
-            found = {
-              mobile: data[0].mobile,
-              name: data[0].name || "अधिकृत छात्र",
-              activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
-              addedAt: data[0].created_at ? data[0].created_at.split("T")[0] : "2026-11-01",
-              status: data[0].status || "ACTIVE"
-            };
-            // Cache immediately to local storage
-            const localList = getAuthorizedStudents();
-            const idx = localList.findIndex(s => s.mobile === cleanPhone);
-            if (idx >= 0) localList[idx] = found; else localList.unshift(found);
-            saveAuthorizedStudents(localList);
+          if (Array.isArray(data) && data.length > 0) {
+            if (data[0].status !== "ACTIVE") {
+              isBlockedInCloud = true;
+            } else {
+              found = {
+                mobile: data[0].mobile,
+                name: data[0].name || "अधिकृत छात्र",
+                password: data[0].password || "070719",
+                activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
+                addedAt: data[0].created_at ? data[0].created_at.split("T")[0] : "2026-11-01",
+                status: data[0].status || "ACTIVE"
+              };
+              // Cache immediately to local storage
+              const localList = getAuthorizedStudents();
+              const idx = localList.findIndex(s => s.mobile === cleanPhone);
+              if (idx >= 0) localList[idx] = found; else localList.unshift(found);
+              saveAuthorizedStudents(localList);
+            }
           }
         }
       } catch (e) {
         console.warn("Live Supabase check failed, checking offline storage:", e);
+      }
+
+      if (isBlockedInCloud) {
+        showAuthError("यह मोबाइल नंबर एडमिन द्वारा ब्लॉक किया गया है। कृपया पायनियर एकेडमी एडमिन से संपर्क करें।");
+        return;
       }
 
       // 2. Offline fallback: Check local whitelist
@@ -8152,6 +8397,18 @@ const DEFAULT_FLASHCARDS = [
       if (!found) {
         showAuthError("यह मोबाइल नंबर पंजीकृत नहीं है। केवल पायनियर एकेडमी के अधिकृत छात्र ही प्रवेश कर सकते हैं। नामांकन हेतु एडमिन से संपर्क करें।");
         return;
+      }
+
+      // Check if another device currently holds an active session for this number
+      const activeTag = parseSessionTag(found.password);
+      const myDevId = getOrCreateDeviceId();
+      const otherNotice = document.getElementById("otherDeviceActiveNotice");
+      if (otherNotice) {
+        if (activeTag && activeTag.deviceId !== myDevId) {
+          otherNotice.classList.remove("hidden");
+        } else {
+          otherNotice.classList.add("hidden");
+        }
       }
 
       // 3. Generate 6-digit Secure OTP
@@ -8245,7 +8502,7 @@ const DEFAULT_FLASHCARDS = [
       alert(val ? "Fast2SMS API Key सफलतापूर्वक सेव हो गई!" : "सेटिंग्स अपडेट हो गई (WhatsApp व लाइव OTP सक्रिय)।");
     }
 
-    function verifyStudentOtp() {
+    async function verifyStudentOtp() {
       hideAuthError();
       const otpInput = document.getElementById("studentOtpInput");
       if (!otpInput) return;
@@ -8262,13 +8519,37 @@ const DEFAULT_FLASHCARDS = [
         return;
       }
 
-      // OTP Verification Succeeded!
-      if (otpCountdownTimer) {
-        clearInterval(otpCountdownTimer);
-        otpCountdownTimer = null;
+      const verifyBtn = document.getElementById("btnVerifyOtp");
+      const origHtml = verifyBtn ? verifyBtn.innerHTML : "";
+      if (verifyBtn) {
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = `<span>⏳</span> <span>डिवाइस सत्यापित हो रहा है...</span>`;
       }
 
-      setAuthSession("student", activeStudentPhone, (activeStudentData && activeStudentData.name) || "अधिकृत छात्र");
+      try {
+        // OTP Verification Succeeded -> Claim single active device session in Supabase
+        if (otpCountdownTimer) {
+          clearInterval(otpCountdownTimer);
+          otpCountdownTimer = null;
+        }
+
+        const deviceId = getOrCreateDeviceId();
+        const sessionToken = generateSessionToken();
+        const sessionTag = `S1|${deviceId}|${sessionToken}`;
+        await claimActiveDeviceSessionInSupabase(activeStudentPhone, sessionTag);
+
+        setAuthSession(
+          "student",
+          activeStudentPhone,
+          (activeStudentData && activeStudentData.name) || "अधिकृत छात्र",
+          { deviceId, sessionToken, sessionTag }
+        );
+      } finally {
+        if (verifyBtn) {
+          verifyBtn.disabled = false;
+          if (origHtml) verifyBtn.innerHTML = origHtml;
+        }
+      }
     }
 
     // Retain legacy signature for backward compatibility
@@ -8304,7 +8585,7 @@ const DEFAULT_FLASHCARDS = [
 
     function handleLogout() {
       if (confirm("क्या आप निश्चित रूप से लॉगआउट करना चाहते हैं?")) {
-        clearAuthSession();
+        clearAuthSession(false);
       }
     }
 
@@ -8420,6 +8701,28 @@ const DEFAULT_FLASHCARDS = [
       }
     }
 
+    async function forceLogoutStudentFromAdmin(phone) {
+      const cleanPhone = (phone || "").toString().replace(/\D/g, "");
+      if (!cleanPhone) return;
+      if (!confirm(`क्या आप छात्र (${cleanPhone}) के सक्रिय मोबाइल सत्र को लॉगआउट करना चाहते हैं?`)) return;
+
+      updateLocalStudentPasswordField(cleanPhone, "LOGGED_OUT");
+      try {
+        await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}`, {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ password: "LOGGED_OUT" })
+        });
+      } catch (e) {
+        console.warn("Supabase force logout warning:", e);
+      }
+      renderAuthorizedStudentsTable();
+    }
+
     function renderAuthorizedStudentsTable() {
       const tbody = document.getElementById("authStudentsTableBody");
       const countSpan = document.getElementById("authStudentsCount");
@@ -8433,7 +8736,15 @@ const DEFAULT_FLASHCARDS = [
         return;
       }
 
-      tbody.innerHTML = list.map((item, idx) => `
+      tbody.innerHTML = list.map((item, idx) => {
+        const activeSess = parseSessionTag(item.password);
+        const statusBadge = activeSess
+          ? `<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">📱 1 डिवाइस सक्रिय</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">✓ सक्रिय</span>`;
+        const kickBtn = activeSess
+          ? `<button onclick="forceLogoutStudentFromAdmin('${item.mobile}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded text-[11px] font-bold mr-1.5" title="सक्रिय डिवाइस लॉगआउट करें">🔒 सत्र हटाएं</button>`
+          : "";
+        return `
         <tr class="border-b hover:bg-slate-50 transition-colors">
           <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
           <td class="p-2.5 font-mono font-bold text-blue-900">${item.mobile}</td>
@@ -8441,16 +8752,16 @@ const DEFAULT_FLASHCARDS = [
           <td class="p-2.5">
             <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono font-black text-xs">${item.activationKey}</span>
           </td>
-          <td class="p-2.5">
-            <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">✓ सक्रिय</span>
-          </td>
+          <td class="p-2.5">${statusBadge}</td>
           <td class="p-2.5 text-slate-500 text-[11px]">${item.addedAt || '-'}</td>
-          <td class="p-2.5 text-right">
+          <td class="p-2.5 text-right whitespace-nowrap">
+            ${kickBtn}
             <button onclick="copySingleStudentInvite('${item.mobile}', '${item.activationKey}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-bold mr-1.5" title="मैसेज कॉपी करें">📋 कॉपी</button>
             <button onclick="handleRemoveStudentFromAdmin('${item.mobile}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-[11px] font-bold" title="हटाएं">✕ हटाएं</button>
           </td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function copyGeneratedStudentInvite() {
