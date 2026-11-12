@@ -166,27 +166,21 @@
           </button>
         </div>
 
-        <!-- STEP 2: OTP Verification Screen -->
+        <!-- STEP 2: Online OTP Verification Screen (Zero On-Screen Fake OTP) -->
         <div id="studentStepOtp" class="hidden space-y-3.5">
-          <!-- Mobile Delivery Quick Action Buttons -->
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="openWhatsAppOtp()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 border border-emerald-400/40">
-              <span>💬</span> <span>WhatsApp पर OTP</span>
-            </button>
-            <button onclick="openDeviceSmsOtp()" class="py-2.5 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 border border-blue-400/40">
-              <span>📱</span> <span>मोबाइल SMS खोलें</span>
-            </button>
-          </div>
-
-          <!-- In-App Realistic SMS Notification Banner -->
-          <div id="otpSimulatorBanner" class="p-3 bg-slate-950 border border-emerald-500/50 rounded-2xl text-emerald-200 text-xs shadow-xl space-y-1">
-            <div class="flex items-center justify-between text-emerald-400 font-bold">
-              <span class="flex items-center gap-1.5"><span>📩</span> <span>SMS सत्यापन कोड (OTP)</span></span>
-              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-mono">LIVE OTP</span>
+          <!-- Live Online OTP Status Banner -->
+          <div id="otpLiveStatusBanner" class="p-3.5 bg-slate-950 border border-blue-500/45 rounded-2xl text-slate-200 text-xs shadow-xl space-y-2">
+            <div class="flex items-center justify-between text-blue-400 font-bold">
+              <span class="flex items-center gap-1.5"><span>🔐</span> <span>ऑनलाइन OTP भेजा गया</span></span>
+              <span class="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded-full font-mono">+91 <span id="otpSentPhoneLabel"></span></span>
             </div>
-            <p class="text-[12px] text-slate-300 leading-relaxed">
-              लॉगिन हेतु आपका 6-अंकीय OTP: <span id="simulatedOtpDisplay" class="font-mono font-black text-lg text-amber-300 tracking-wider">------</span>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              आपके मोबाइल लॉगिन हेतु नया 6-अंकीय ऑनलाइन OTP जनरेट होकर पायनियर एकेडमी एडमिन पोर्टल पर पहुँच चुका है। प्राप्त OTP नीचे दर्ज करें:
             </p>
+            <a id="btnContactAdminOtp" href="https://api.whatsapp.com/send?phone=919155933842" target="_blank"
+              class="w-full py-2 px-3 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded-xl text-[11px] font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 border border-emerald-400/40">
+              <span>💬</span> <span>WhatsApp पर एडमिन से OTP प्राप्त करें</span>
+            </a>
           </div>
 
           <div class="space-y-1.5">
@@ -194,10 +188,10 @@
               <label class="font-bold text-slate-300">6-अंकीय OTP दर्ज करें:</label>
               <button onclick="resetStudentOtpForm()" class="text-blue-400 hover:underline text-[11px] font-semibold">नंबर बदलें</button>
             </div>
-            <input type="text" id="studentOtpInput" maxlength="6" placeholder="• • • • • •" 
+            <input type="tel" inputmode="numeric" id="studentOtpInput" maxlength="6" placeholder="• • • • • •" 
               class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-xl font-mono font-black tracking-widest text-amber-400 placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
             <div class="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
-              <span>समय सीमा: 5 मिनट</span>
+              <span>समय सीमा: 5 मिनट (एक बार प्रयोग)</span>
               <button id="btnResendOtp" onclick="requestStudentOtp()" disabled class="text-slate-500 text-[11px] font-semibold">पुनः OTP भेजें (<span id="otpCountdown">45</span>s)</button>
             </div>
           </div>
@@ -811,14 +805,31 @@
             </div>
           </div>
 
+          <!-- Live Pending OTP Notification Banner for Admin -->
+          <div id="adminPendingOtpBanner" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 shadow-xs space-y-2.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-2">
+              <div class="flex items-center gap-2 text-amber-950 font-extrabold text-xs sm:text-sm">
+                <span class="animate-pulse">🔔</span>
+                <span>लाइव छात्र OTP अनुरोध (<span id="adminPendingOtpCount">0</span>)</span>
+              </div>
+              <button onclick="syncStudentsFromSupabase()" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black rounded-lg transition-all">
+                🔄 अभी रिफ्रेश करें
+              </button>
+            </div>
+            <div id="adminPendingOtpList" class="space-y-2"></div>
+          </div>
+
           <!-- Authorized Students Table Card -->
           <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b pb-2.5">
               <div>
-                <h4 class="font-extrabold text-sm text-slate-900">अधिकृत छात्रों की सूची (Authorized Students Whitelist)</h4>
-                <p class="text-[11px] text-slate-500">कुल अधिकृत: <span id="authStudentsCount" class="font-bold text-blue-700">0</span> छात्र</p>
+                <h4 class="font-extrabold text-sm text-slate-900">अधिकृत छात्रों की सूची (Authorized Students & Live OTP)</h4>
+                <p class="text-[11px] text-slate-500">कुल अधिकृत: <span id="authStudentsCount" class="font-bold text-blue-700">0</span> छात्र • लाइव ऑटो-रिफ्रेश सक्रिय</p>
               </div>
               <div class="flex items-center gap-2">
+                <button onclick="syncStudentsFromSupabase()" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold rounded-lg transition-all flex items-center gap-1">
+                  <span>🔄</span> <span>रिफ्रेश</span>
+                </button>
                 <button onclick="copyAllAuthorizedKeys()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-all flex items-center gap-1">
                   <span>📋</span> <span>सभी कॉपी करें</span>
                 </button>
@@ -832,7 +843,7 @@
                     <th class="p-2.5">#</th>
                     <th class="p-2.5">मोबाइल नंबर</th>
                     <th class="p-2.5">नाम / विवरण</th>
-                    <th class="p-2.5">एक्टिवेशन की</th>
+                    <th class="p-2.5">लाइव OTP / की</th>
                     <th class="p-2.5">स्थिति</th>
                     <th class="p-2.5">दिनांक</th>
                     <th class="p-2.5 text-right">कार्रवाई</th>
@@ -7084,6 +7095,7 @@ const DEFAULT_FLASHCARDS = [
     async function syncStudentsFromSupabase() {
       try {
         const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?select=*`, {
+          cache: "no-store",
           headers: {
             "apikey": SUPABASE_CONFIG.anonKey,
             "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
@@ -7093,14 +7105,18 @@ const DEFAULT_FLASHCARDS = [
           const cloudList = await res.json();
           if (Array.isArray(cloudList) && cloudList.length > 0) {
             isSupabaseConnected = true;
+            const isAdminViewer = Boolean(state.currentUser && state.currentUser.role === "admin");
             const localList = getAuthorizedStudents();
             cloudList.forEach(cs => {
               const idx = localList.findIndex(l => l.mobile === cs.mobile);
+              const rawKey = cs.activation_key || generateActivationKey(cs.mobile);
+              // Do not cache pending OTP codes in non-admin browsers' localStorage
+              const safeKey = (!isAdminViewer && rawKey.startsWith("*")) ? "PENDING" : rawKey;
               const mapped = {
                 mobile: cs.mobile,
                 name: cs.name || "अधिकृत छात्र",
                 password: cs.password || "070719",
-                activationKey: cs.activation_key || generateActivationKey(cs.mobile),
+                activationKey: safeKey,
                 addedAt: cs.created_at ? cs.created_at.split("T")[0] : "2026-11-01",
                 status: cs.status || "ACTIVE"
               };
@@ -7109,14 +7125,15 @@ const DEFAULT_FLASHCARDS = [
             });
             saveAuthorizedStudents(localList);
             updateCloudSyncStatus(true);
-            if (state.activeTab === "admin") renderAuthorizedStudentsTable();
-            return;
+            if (isAdminViewer) renderAuthorizedStudentsTable();
+            return true;
           }
         }
       } catch (e) {
         console.warn("Supabase fetch skipped (offline mode):", e);
       }
       updateCloudSyncStatus(false);
+      return false;
     }
 
     async function saveStudentToSupabase(student) {
@@ -7490,6 +7507,26 @@ const DEFAULT_FLASHCARDS = [
       }
     }
 
+    let adminLiveSyncTimer = null;
+
+    function startAdminLiveSync() {
+      stopAdminLiveSync();
+      if (state.currentUser && state.currentUser.role === "admin") {
+        adminLiveSyncTimer = setInterval(() => {
+          if (document.visibilityState !== "hidden" && state.currentUser && state.currentUser.role === "admin") {
+            syncStudentsFromSupabase();
+          }
+        }, 5000);
+      }
+    }
+
+    function stopAdminLiveSync() {
+      if (adminLiveSyncTimer) {
+        clearInterval(adminLiveSyncTimer);
+        adminLiveSyncTimer = null;
+      }
+    }
+
     function stopSessionHeartbeat() {
       if (sessionHeartbeatTimer) {
         clearInterval(sessionHeartbeatTimer);
@@ -7516,15 +7553,19 @@ const DEFAULT_FLASHCARDS = [
       state.currentUser = sess;
       applyAuthUI();
       if (role === "student") {
+        stopAdminLiveSync();
         startSessionHeartbeat();
       } else {
         stopSessionHeartbeat();
+        startAdminLiveSync();
+        syncStudentsFromSupabase();
       }
     }
 
     function clearAuthSession(skipCloudRelease = false) {
       const prev = state.currentUser;
       stopSessionHeartbeat();
+      stopAdminLiveSync();
       if (!skipCloudRelease && prev && prev.role === "student" && prev.mobile && prev.sessionTag) {
         releaseActiveDeviceSessionInSupabase(prev.mobile, prev.sessionTag);
         updateLocalStudentPasswordField(prev.mobile, "LOGGED_OUT");
@@ -7582,6 +7623,10 @@ const DEFAULT_FLASHCARDS = [
         if (savedSession && savedSession.role === "student") {
           startSessionHeartbeat();
           verifyActiveDeviceSession("startup");
+        } else if (savedSession && savedSession.role === "admin") {
+          startAdminLiveSync();
+        } else {
+          restorePendingOtpUiIfValid();
         }
       } catch (err) {
         console.error("Critical error in initAppData:", err);
@@ -8306,14 +8351,105 @@ const DEFAULT_FLASHCARDS = [
       if (errBox) errBox.classList.add("hidden");
     }
 
-    let activeStudentOtp = null;
     let activeStudentPhone = "";
     let activeStudentData = null;
     let otpCountdownTimer = null;
     let otpExpiresAt = 0;
 
+    function parsePendingOtp(val) {
+      if (val && typeof val === "string" && val.startsWith("*") && /^\d{6}$/.test(val.substring(1))) {
+        return val.substring(1);
+      }
+      return null;
+    }
+
+    function savePendingOtpFlow(phone, expiresAt) {
+      try {
+        sessionStorage.setItem("PIONEER_PENDING_OTP", JSON.stringify({ phone, expiresAt }));
+      } catch (_) {}
+    }
+
+    function loadPendingOtpFlow() {
+      try {
+        const raw = sessionStorage.getItem("PIONEER_PENDING_OTP");
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        if (!obj || !obj.phone || !obj.expiresAt || Date.now() > obj.expiresAt) {
+          sessionStorage.removeItem("PIONEER_PENDING_OTP");
+          return null;
+        }
+        return obj;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function clearPendingOtpFlow() {
+      try { sessionStorage.removeItem("PIONEER_PENDING_OTP"); } catch (_) {}
+    }
+
+    function restorePendingOtpUiIfValid() {
+      const pending = loadPendingOtpFlow();
+      if (!pending) return;
+      activeStudentPhone = pending.phone;
+      otpExpiresAt = pending.expiresAt;
+      const phoneInput = document.getElementById("studentLoginPhone");
+      if (phoneInput) phoneInput.value = pending.phone;
+      showOtpStepUi(pending.phone, false);
+    }
+
+    function showOtpStepUi(cleanPhone, startTimer = true) {
+      const stepMob = document.getElementById("studentStepMobile");
+      const stepOtp = document.getElementById("studentStepOtp");
+      const phoneLbl = document.getElementById("otpSentPhoneLabel");
+      const contactBtn = document.getElementById("btnContactAdminOtp");
+      const otpInput = document.getElementById("studentOtpInput");
+
+      if (stepMob) stepMob.classList.add("hidden");
+      if (stepOtp) stepOtp.classList.remove("hidden");
+      if (phoneLbl) phoneLbl.innerText = cleanPhone;
+      if (contactBtn) {
+        const helpMsg = encodeURIComponent(`नमस्ते Sir, मैंने Pioneer Academy लॉगिन के लिए मोबाइल नंबर ${cleanPhone} से ऑनलाइन OTP अनुरोध किया है। कृपया मेरा 6-अंकीय OTP भेज दीजिए।`);
+        contactBtn.href = `https://api.whatsapp.com/send?phone=919155933842&text=${helpMsg}`;
+      }
+      if (otpInput) {
+        otpInput.value = "";
+        otpInput.focus();
+      }
+
+      const resendBtn = document.getElementById("btnResendOtp");
+      if (otpCountdownTimer) clearInterval(otpCountdownTimer);
+      if (startTimer) {
+        let countdown = 45;
+        if (resendBtn) {
+          resendBtn.disabled = true;
+          resendBtn.className = "text-slate-500 text-[11px] font-semibold";
+          resendBtn.innerHTML = `पुनः OTP भेजें (<span id="otpCountdown">${countdown}</span>s)`;
+        }
+        otpCountdownTimer = setInterval(() => {
+          countdown--;
+          const cd = document.getElementById("otpCountdown");
+          if (cd) cd.innerText = countdown;
+          if (countdown <= 0) {
+            clearInterval(otpCountdownTimer);
+            otpCountdownTimer = null;
+            if (resendBtn) {
+              resendBtn.disabled = false;
+              resendBtn.className = "text-blue-400 hover:underline text-[11px] font-semibold cursor-pointer";
+              resendBtn.innerText = "पुनः OTP भेजें";
+            }
+          }
+        }, 1000);
+      } else if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.className = "text-blue-400 hover:underline text-[11px] font-semibold cursor-pointer";
+        resendBtn.innerText = "पुनः OTP भेजें";
+      }
+    }
+
     function resetStudentOtpForm() {
       hideAuthError();
+      clearPendingOtpFlow();
       const stepMob = document.getElementById("studentStepMobile");
       const stepOtp = document.getElementById("studentStepOtp");
       const otherNotice = document.getElementById("otherDeviceActiveNotice");
@@ -8324,9 +8460,9 @@ const DEFAULT_FLASHCARDS = [
         clearInterval(otpCountdownTimer);
         otpCountdownTimer = null;
       }
-      activeStudentOtp = null;
       activeStudentPhone = "";
       activeStudentData = null;
+      otpExpiresAt = 0;
       const phoneInput = document.getElementById("studentLoginPhone");
       if (phoneInput) {
         phoneInput.focus();
@@ -8346,142 +8482,107 @@ const DEFAULT_FLASHCARDS = [
         return;
       }
 
-      // 1. LIVE REAL-TIME CHECK: First check live Supabase database so newly added numbers work immediately!
-      let found = null;
-      let isBlockedInCloud = false;
+      const reqBtn = document.getElementById("btnRequestOtp");
+      const origReqHtml = reqBtn ? reqBtn.innerHTML : "";
+      if (reqBtn) {
+        reqBtn.disabled = true;
+        reqBtn.innerHTML = `<span>⏳</span> <span>ऑनलाइन OTP भेजा जा रहा है...</span>`;
+      }
+
       try {
-        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=*`, {
-          cache: "no-store",
+        // 1. LIVE ONLINE CHECK: Online OTP must be generated & verified via live Supabase cloud
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 7000);
+        let res;
+        try {
+          res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}&select=mobile,name,status,password`, {
+            cache: "no-store",
+            signal: ctrl.signal,
+            headers: {
+              "apikey": SUPABASE_CONFIG.anonKey,
+              "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+            }
+          });
+        } finally {
+          clearTimeout(tid);
+        }
+
+        if (!res.ok) {
+          showAuthError("ऑनलाइन OTP सर्वर से संपर्क नहीं हो सका। कृपया पुनः प्रयास करें।");
+          return;
+        }
+
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          showAuthError("यह मोबाइल नंबर पंजीकृत नहीं है। केवल पायनियर एकेडमी के अधिकृत छात्र ही प्रवेश कर सकते हैं। नामांकन हेतु एडमिन से संपर्क करें।");
+          return;
+        }
+
+        if (data[0].status !== "ACTIVE") {
+          showAuthError("यह मोबाइल नंबर एडमिन द्वारा ब्लॉक किया गया है। कृपया पायनियर एकेडमी एडमिन से संपर्क करें।");
+          return;
+        }
+
+        const studentRow = data[0];
+        activeStudentPhone = cleanPhone;
+        activeStudentData = {
+          mobile: studentRow.mobile,
+          name: studentRow.name || "अधिकृत छात्र",
+          password: studentRow.password || "070719",
+          status: studentRow.status
+        };
+
+        // Check if another device currently holds an active session for this number
+        const activeTag = parseSessionTag(studentRow.password);
+        const myDevId = getOrCreateDeviceId();
+        const otherNotice = document.getElementById("otherDeviceActiveNotice");
+        if (otherNotice) {
+          if (activeTag && activeTag.deviceId !== myDevId) {
+            otherNotice.classList.remove("hidden");
+          } else {
+            otherNotice.classList.add("hidden");
+          }
+        }
+
+        // 2. Generate fresh 6-digit one-time online OTP (kept ONLY in Supabase, never shown on student screen!)
+        const freshOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        otpExpiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes validity
+
+        const patchRes = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}`, {
+          method: "PATCH",
           headers: {
             "apikey": SUPABASE_CONFIG.anonKey,
-            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
-          }
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ activation_key: "*" + freshOtp })
         });
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            if (data[0].status !== "ACTIVE") {
-              isBlockedInCloud = true;
-            } else {
-              found = {
-                mobile: data[0].mobile,
-                name: data[0].name || "अधिकृत छात्र",
-                password: data[0].password || "070719",
-                activationKey: data[0].activation_key || generateActivationKey(cleanPhone),
-                addedAt: data[0].created_at ? data[0].created_at.split("T")[0] : "2026-11-01",
-                status: data[0].status || "ACTIVE"
-              };
-              // Cache immediately to local storage
-              const localList = getAuthorizedStudents();
-              const idx = localList.findIndex(s => s.mobile === cleanPhone);
-              if (idx >= 0) localList[idx] = found; else localList.unshift(found);
-              saveAuthorizedStudents(localList);
-            }
-          }
+
+        if (!patchRes.ok) {
+          showAuthError("ऑनलाइन OTP जनरेट करने में त्रुटि हुई। कृपया इंटरनेट जांचकर पुनः प्रयास करें।");
+          return;
         }
+
+        // 3. Optional real telecom SMS if Fast2SMS key configured on host
+        const smsApiKey = safeGet("PIONEER_FAST2SMS_KEY", "");
+        if (smsApiKey) {
+          fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(smsApiKey)}&route=otp&variables_values=${freshOtp}&numbers=${cleanPhone}`)
+            .then(r => r.json()).then(r => console.log("Fast2SMS result:", r)).catch(e => console.warn("Fast2SMS gateway notice:", e));
+        }
+
+        // 4. Persist only phone + expiry (never the OTP) in sessionStorage & show Step 2
+        savePendingOtpFlow(cleanPhone, otpExpiresAt);
+        showOtpStepUi(cleanPhone, true);
       } catch (e) {
-        console.warn("Live Supabase check failed, checking offline storage:", e);
-      }
-
-      if (isBlockedInCloud) {
-        showAuthError("यह मोबाइल नंबर एडमिन द्वारा ब्लॉक किया गया है। कृपया पायनियर एकेडमी एडमिन से संपर्क करें।");
-        return;
-      }
-
-      // 2. Offline fallback: Check local whitelist
-      if (!found) {
-        const list = getAuthorizedStudents();
-        found = list.find(s => s.mobile === cleanPhone);
-      }
-
-      if (!found) {
-        showAuthError("यह मोबाइल नंबर पंजीकृत नहीं है। केवल पायनियर एकेडमी के अधिकृत छात्र ही प्रवेश कर सकते हैं। नामांकन हेतु एडमिन से संपर्क करें।");
-        return;
-      }
-
-      // Check if another device currently holds an active session for this number
-      const activeTag = parseSessionTag(found.password);
-      const myDevId = getOrCreateDeviceId();
-      const otherNotice = document.getElementById("otherDeviceActiveNotice");
-      if (otherNotice) {
-        if (activeTag && activeTag.deviceId !== myDevId) {
-          otherNotice.classList.remove("hidden");
-        } else {
-          otherNotice.classList.add("hidden");
+        console.warn("Online OTP request error:", e);
+        showAuthError("ऑनलाइन OTP भेजने के लिए इंटरनेट कनेक्शन आवश्यक है। कृपया इंटरनेट चालू कर पुनः प्रयास करें।");
+      } finally {
+        if (reqBtn) {
+          reqBtn.disabled = false;
+          if (origReqHtml) reqBtn.innerHTML = origReqHtml;
         }
       }
-
-      // 3. Generate 6-digit Secure OTP
-      activeStudentOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      activeStudentPhone = cleanPhone;
-      activeStudentData = found;
-      otpExpiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes validity
-
-      // 4. Update Supabase with current OTP for multi-device sync
-      fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}`, {
-        method: "PATCH",
-        headers: {
-          "apikey": SUPABASE_CONFIG.anonKey,
-          "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ activation_key: activeStudentOtp })
-      }).catch(e => console.warn("Supabase OTP sync notice:", e));
-
-      // 5. Send Real SMS if Fast2SMS Gateway is configured
-      const smsApiKey = safeGet("PIONEER_FAST2SMS_KEY", "");
-      if (smsApiKey) {
-        fetch(`https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(smsApiKey)}&route=otp&variables_values=${activeStudentOtp}&numbers=${cleanPhone}`)
-          .then(r => r.json()).then(res => console.log("Fast2SMS result:", res)).catch(e => console.warn("Fast2SMS gateway error:", e));
-      }
-
-      // 6. Update UI to Step 2 (OTP Entry)
-      const stepMob = document.getElementById("studentStepMobile");
-      const stepOtp = document.getElementById("studentStepOtp");
-      const displaySpan = document.getElementById("simulatedOtpDisplay");
-      const otpInput = document.getElementById("studentOtpInput");
-
-      if (stepMob) stepMob.classList.add("hidden");
-      if (stepOtp) stepOtp.classList.remove("hidden");
-      if (displaySpan) displaySpan.innerText = activeStudentOtp;
-      if (otpInput) {
-        otpInput.value = "";
-        otpInput.focus();
-      }
-
-      // Start Countdown for Resend Button
-      let countdown = 45;
-      const resendBtn = document.getElementById("btnResendOtp");
-      const countdownSpan = document.getElementById("otpCountdown");
-      if (resendBtn) resendBtn.disabled = true;
-      if (countdownSpan) countdownSpan.innerText = countdown;
-
-      if (otpCountdownTimer) clearInterval(otpCountdownTimer);
-      otpCountdownTimer = setInterval(() => {
-        countdown--;
-        if (countdownSpan) countdownSpan.innerText = countdown;
-        if (countdown <= 0) {
-          clearInterval(otpCountdownTimer);
-          otpCountdownTimer = null;
-          if (resendBtn) {
-            resendBtn.disabled = false;
-            resendBtn.className = "text-blue-400 hover:underline text-[11px] font-semibold cursor-pointer";
-            resendBtn.innerText = "पुनः OTP भेजें";
-          }
-        }
-      }, 1000);
-    }
-
-    function openWhatsAppOtp() {
-      if (!activeStudentPhone || !activeStudentOtp) return;
-      const text = encodeURIComponent(`🏆 *पायनियर एकेडमी (PIONEER Academy)*\nछात्र लॉगिन हेतु आपका 6-अंकीय OTP है: *${activeStudentOtp}*\n(यह OTP 5 मिनट के लिए मान्य है)`);
-      window.open(`https://api.whatsapp.com/send?phone=91${activeStudentPhone}&text=${text}`, '_blank');
-    }
-
-    function openDeviceSmsOtp() {
-      if (!activeStudentPhone || !activeStudentOtp) return;
-      const text = encodeURIComponent(`PIONEER Academy OTP: ${activeStudentOtp}`);
-      window.location.href = `sms:91${activeStudentPhone}?body=${text}`;
     }
 
     function saveAdminSmsConfig() {
@@ -8493,13 +8594,13 @@ const DEFAULT_FLASHCARDS = [
       if (badge) {
         if (val) {
           badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
-          badge.innerText = "✓ Fast2SMS टेलीकॉम गेटवे सक्रिय";
+          badge.innerText = "✓ Fast2SMS + लाइव एडमिन OTP सक्रिय";
         } else {
           badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-          badge.innerText = "WhatsApp व लाइव OTP सक्रिय";
+          badge.innerText = "लाइव ऑनलाइन एडमिन-डिलीवर्ड OTP सक्रिय";
         }
       }
-      alert(val ? "Fast2SMS API Key सफलतापूर्वक सेव हो गई!" : "सेटिंग्स अपडेट हो गई (WhatsApp व लाइव OTP सक्रिय)।");
+      alert(val ? "Fast2SMS API Key सफलतापूर्वक सेव हो गई!" : "लाइव ऑनलाइन एडमिन OTP मोड सक्रिय है।");
     }
 
     async function verifyStudentOtp() {
@@ -8508,14 +8609,26 @@ const DEFAULT_FLASHCARDS = [
       if (!otpInput) return;
 
       const enteredOtp = otpInput.value.trim().replace(/\D/g, "");
-
-      if (Date.now() > otpExpiresAt) {
-        showAuthError("OTP की समय सीमा समाप्त (Expired) हो चुकी है। कृपया पुनः OTP प्राप्त करें।");
+      if (enteredOtp.length !== 6) {
+        showAuthError("कृपया 6-अंकीय मान्य OTP दर्ज करें।");
         return;
       }
 
-      if (!activeStudentOtp || enteredOtp !== activeStudentOtp) {
-        showAuthError("अमान्य OTP! कृपया प्राप्त 6-अंकीय OTP सही दर्ज करें।");
+      const pending = loadPendingOtpFlow();
+      const targetPhone = activeStudentPhone
+        || (pending && pending.phone)
+        || (document.getElementById("studentLoginPhone")?.value.trim().replace(/\D/g, "") || "");
+      const effectiveExpiry = otpExpiresAt || (pending ? pending.expiresAt : 0);
+
+      if (!targetPhone || targetPhone.length !== 10) {
+        showAuthError("सत्र जानकारी उपलब्ध नहीं है। कृपया मोबाइल नंबर पुनः दर्ज करें।");
+        resetStudentOtpForm();
+        return;
+      }
+
+      if (effectiveExpiry && Date.now() > effectiveExpiry) {
+        clearPendingOtpFlow();
+        showAuthError("OTP की समय सीमा समाप्त (Expired) हो चुकी है। कृपया 'पुनः OTP भेजें' दबाएं।");
         return;
       }
 
@@ -8523,27 +8636,74 @@ const DEFAULT_FLASHCARDS = [
       const origHtml = verifyBtn ? verifyBtn.innerHTML : "";
       if (verifyBtn) {
         verifyBtn.disabled = true;
-        verifyBtn.innerHTML = `<span>⏳</span> <span>डिवाइस सत्यापित हो रहा है...</span>`;
+        verifyBtn.innerHTML = `<span>⏳</span> <span>ऑनलाइन OTP सत्यापित हो रहा है...</span>`;
       }
 
       try {
-        // OTP Verification Succeeded -> Claim single active device session in Supabase
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${targetPhone}&select=mobile,name,status,password,activation_key`, {
+          cache: "no-store",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+          }
+        });
+        if (!res.ok) {
+          showAuthError("OTP सत्यापन सर्वर से संपर्क नहीं हो सका। कृपया पुनः प्रयास करें।");
+          return;
+        }
+        const rows = await res.json();
+        if (!Array.isArray(rows) || rows.length === 0 || rows[0].status !== "ACTIVE") {
+          showAuthError("यह मोबाइल नंबर सक्रिय नहीं है। कृपया एडमिन से संपर्क करें।");
+          return;
+        }
+
+        const cloudOtp = parsePendingOtp(rows[0].activation_key);
+        if (!cloudOtp) {
+          showAuthError("यह OTP पहले ही उपयोग हो चुका है या समाप्त हो गया है। कृपया 'पुनः OTP भेजें' दबाएं।");
+          return;
+        }
+
+        if (enteredOtp !== cloudOtp) {
+          showAuthError("अमान्य OTP! कृपया प्राप्त सही 6-अंकीय ऑनलाइन OTP दर्ज करें।");
+          return;
+        }
+
+        // OTP matched -> Atomically consume OTP ("USED") & bind single active device session
+        const deviceId = getOrCreateDeviceId();
+        const sessionToken = generateSessionToken();
+        const sessionTag = `S1|${deviceId}|${sessionToken}`;
+
+        const consumeRes = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${targetPhone}`, {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ password: sessionTag, activation_key: "USED" })
+        });
+        if (!consumeRes.ok) {
+          showAuthError("लॉगिन सत्र सुरक्षित करने में त्रुटि हुई। कृपया पुनः प्रयास करें।");
+          return;
+        }
+
         if (otpCountdownTimer) {
           clearInterval(otpCountdownTimer);
           otpCountdownTimer = null;
         }
-
-        const deviceId = getOrCreateDeviceId();
-        const sessionToken = generateSessionToken();
-        const sessionTag = `S1|${deviceId}|${sessionToken}`;
-        await claimActiveDeviceSessionInSupabase(activeStudentPhone, sessionTag);
+        clearPendingOtpFlow();
+        otpExpiresAt = 0;
 
         setAuthSession(
           "student",
-          activeStudentPhone,
-          (activeStudentData && activeStudentData.name) || "अधिकृत छात्र",
+          targetPhone,
+          rows[0].name || (activeStudentData && activeStudentData.name) || "अधिकृत छात्र",
           { deviceId, sessionToken, sessionTag }
         );
+      } catch (e) {
+        console.warn("Online OTP verification error:", e);
+        showAuthError("OTP सत्यापित करने के लिए इंटरनेट कनेक्शन आवश्यक है।");
       } finally {
         if (verifyBtn) {
           verifyBtn.disabled = false;
@@ -8723,12 +8883,93 @@ const DEFAULT_FLASHCARDS = [
       renderAuthorizedStudentsTable();
     }
 
+    function adminSendWhatsAppOtp(mobile, otp) {
+      if (!mobile || !otp) return;
+      const text = encodeURIComponent(`🏆 *पायनियर एकेडमी (PIONEER Academy)*\nमोबाइल नंबर ${mobile} के लॉगिन हेतु आपका 6-अंकीय ऑनलाइन OTP है: *${otp}*\n(यह OTP केवल 1 बार और 5 मिनट के लिए मान्य है। किसी से साझा न करें।)`);
+      window.open(`https://api.whatsapp.com/send?phone=91${mobile}&text=${text}`, "_blank");
+    }
+
+    function adminSendSmsOtp(mobile, otp) {
+      if (!mobile || !otp) return;
+      const text = encodeURIComponent(`PIONEER Academy Login OTP for ${mobile}: ${otp} (Valid once for 5 mins)`);
+      window.location.href = `sms:91${mobile}?body=${text}`;
+    }
+
+    async function adminGenerateOtpForStudent(phone) {
+      const cleanPhone = (phone || "").toString().replace(/\D/g, "");
+      if (!cleanPhone) return;
+      const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/students?mobile=eq.${cleanPhone}`, {
+          method: "PATCH",
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+          },
+          body: JSON.stringify({ activation_key: "*" + newOtp })
+        });
+        if (res.ok) {
+          await syncStudentsFromSupabase();
+          alert(`✅ +91 ${cleanPhone} के लिए नया लाइव OTP जनरेट हो गया है: ${newOtp}\nअब आप 💬 WhatsApp या 📱 SMS बटन से भेज सकते हैं।`);
+        } else {
+          alert("OTP अपडेट करने में त्रुटि हुई।");
+        }
+      } catch (e) {
+        alert("इंटरनेट कनेक्शन त्रुटि।");
+      }
+    }
+
+    function renderAdminPendingOtpBanner(list) {
+      const banner = document.getElementById("adminPendingOtpBanner");
+      const countEl = document.getElementById("adminPendingOtpCount");
+      const listEl = document.getElementById("adminPendingOtpList");
+      if (!banner || !listEl) return;
+
+      const pending = (list || []).filter(s => parsePendingOtp(s.activationKey) !== null);
+      if (pending.length === 0) {
+        banner.classList.add("hidden");
+        listEl.innerHTML = "";
+        return;
+      }
+
+      banner.classList.remove("hidden");
+      if (countEl) countEl.innerText = pending.length;
+      listEl.innerHTML = pending.map(s => {
+        const otp = parsePendingOtp(s.activationKey);
+        return `
+          <div class="p-2.5 bg-white border border-amber-300 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="text-xs">
+              <span class="font-bold text-slate-900">${s.name || "छात्र"}</span>
+              <span class="font-mono font-bold text-blue-800 ml-1">+91 ${s.mobile}</span>
+              <span class="mx-1.5 text-slate-400">•</span>
+              <span class="text-slate-600">लाइव OTP:</span>
+              <span class="ml-1 px-2 py-0.5 rounded bg-amber-100 border border-amber-400 text-amber-950 font-mono font-black text-sm tracking-wider">${otp}</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="adminSendWhatsAppOtp('${s.mobile}', '${otp}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold">💬 WhatsApp भेजें</button>
+              <button onclick="adminSendSmsOtp('${s.mobile}', '${otp}')" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold">📱 SMS भेजें</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
     function renderAuthorizedStudentsTable() {
       const tbody = document.getElementById("authStudentsTableBody");
       const countSpan = document.getElementById("authStudentsCount");
       if (!tbody) return;
 
-      const list = getAuthorizedStudents();
+      const rawList = getAuthorizedStudents();
+      renderAdminPendingOtpBanner(rawList);
+
+      // Put students with live pending OTP at the top so Admin spots them instantly
+      const list = [...rawList].sort((a, b) => {
+        const pa = parsePendingOtp(a.activationKey) ? 1 : 0;
+        const pb = parsePendingOtp(b.activationKey) ? 1 : 0;
+        return pb - pa;
+      });
       if (countSpan) countSpan.innerText = list.length;
 
       if (list.length === 0) {
@@ -8738,25 +8979,33 @@ const DEFAULT_FLASHCARDS = [
 
       tbody.innerHTML = list.map((item, idx) => {
         const activeSess = parseSessionTag(item.password);
+        const liveOtp = parsePendingOtp(item.activationKey);
+        const keyBadge = liveOtp
+          ? `<span class="px-2 py-0.5 rounded bg-amber-100 border border-amber-400 text-amber-950 font-mono font-black text-xs animate-pulse">🔔 OTP: ${liveOtp}</span>`
+          : (item.activationKey === "USED"
+              ? `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono font-bold text-[11px]">✓ प्रयुक्त (USED)</span>`
+              : `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono font-black text-xs">${item.activationKey}</span>`);
         const statusBadge = activeSess
           ? `<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">📱 1 डिवाइस सक्रिय</span>`
-          : `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">✓ सक्रिय</span>`;
+          : `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">✓ तैयार</span>`;
+        const waBtn = liveOtp
+          ? `<button onclick="adminSendWhatsAppOtp('${item.mobile}', '${liveOtp}')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold mr-1" title="WhatsApp पर OTP भेजें">💬 WhatsApp</button>`
+          : `<button onclick="adminGenerateOtpForStudent('${item.mobile}')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 rounded text-[11px] font-bold mr-1" title="ऑनलाइन OTP बनाएं">🔑 OTP</button>`;
         const kickBtn = activeSess
-          ? `<button onclick="forceLogoutStudentFromAdmin('${item.mobile}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded text-[11px] font-bold mr-1.5" title="सक्रिय डिवाइस लॉगआउट करें">🔒 सत्र हटाएं</button>`
+          ? `<button onclick="forceLogoutStudentFromAdmin('${item.mobile}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded text-[11px] font-bold mr-1" title="सक्रिय डिवाइस लॉगआउट करें">🔒 सत्र हटाएं</button>`
           : "";
         return `
-        <tr class="border-b hover:bg-slate-50 transition-colors">
+        <tr class="border-b ${liveOtp ? 'bg-amber-50/70' : 'hover:bg-slate-50'} transition-colors">
           <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
           <td class="p-2.5 font-mono font-bold text-blue-900">${item.mobile}</td>
           <td class="p-2.5 font-medium text-slate-800">${item.name || 'छात्र'}</td>
-          <td class="p-2.5">
-            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono font-black text-xs">${item.activationKey}</span>
-          </td>
+          <td class="p-2.5">${keyBadge}</td>
           <td class="p-2.5">${statusBadge}</td>
           <td class="p-2.5 text-slate-500 text-[11px]">${item.addedAt || '-'}</td>
           <td class="p-2.5 text-right whitespace-nowrap">
+            ${waBtn}
             ${kickBtn}
-            <button onclick="copySingleStudentInvite('${item.mobile}', '${item.activationKey}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-bold mr-1.5" title="मैसेज कॉपी करें">📋 कॉपी</button>
+            <button onclick="copySingleStudentInvite('${item.mobile}', '${liveOtp || item.activationKey}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-bold mr-1" title="मैसेज कॉपी करें">📋 कॉपी</button>
             <button onclick="handleRemoveStudentFromAdmin('${item.mobile}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-[11px] font-bold" title="हटाएं">✕ हटाएं</button>
           </td>
         </tr>
@@ -8797,6 +9046,7 @@ const DEFAULT_FLASHCARDS = [
       if (state.currentUser && state.currentUser.role === "admin") {
         renderAuthorizedStudentsTable();
         renderAdminNotesTable();
+        syncStudentsFromSupabase();
       }
     }
 
