@@ -1,11 +1,11 @@
 {
-  "version": "5.6.0",
-  "versionCode": 11,
-  "dataVersion": "20261112",
-  "updateTitle": "पायनियर एकेडमी प्रो - नया अपडेट उपलब्ध है",
-  "updateDescription": "ऑनलाइन छात्र रैंकिंग, 1st Attempt विश्लेषण, 150 टेस्ट सेट्स एवं रियल-टाइम ऑटो-अपडेट",
+  "version": "5.7.0",
+  "versionCode": 12,
+  "dataVersion": "20261113",
+  "updateTitle": "पायनियर एकेडमी प्रो - नया अपडेट (विकल्प सत्यापन एवं हिंट-मुक्त)",
+  "updateDescription": "सभी 150 टेस्ट सेट्स (15,000 प्रश्न) में निष्पक्ष विकल्प, शून्य हिंट/संकेत, संतुलित विकल्प लम्बाई एवं यूपीएससी/एसएससी स्तरीय प्रामाणिक समाधान",
   "apkUrl": "https://skpnr.github.io/pioneer-academy/PIONEER.apk",
   "webUrl": "https://skpnr.github.io/pioneer-academy/",
-  "publishedAt": "2026-11-12T23:50:00+05:30",
+  "publishedAt": "2026-11-13T00:15:00+05:30",
   "autoSyncEnabled": true
 }
