@@ -2,23 +2,47 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#020617">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PIONEER PRO">
+  <meta name="format-detection" content="telephone=no">
+  <script>
+    if (location.protocol !== "file:") {
+      var mf = document.createElement("link");
+      mf.rel = "manifest";
+      mf.href = "manifest.json";
+      document.head.appendChild(mf);
+    }
+  </script>
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <title>PIONEER - State PCS & JSSC Academy</title>
   <script src="vendor/tailwind.js"></script>
   <style>
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overscroll-behavior-y: contain; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", "Helvetica Neue", Arial, sans-serif;
       margin: 0; padding: 0; background-color: #0f172a; color: #0f172a;
       -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
     }
     .hidden { display: none !important; }
     .custom-scroll::-webkit-scrollbar { display: none; }
     .custom-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .ios-safe-top { padding-top: env(safe-area-inset-top, 0px); }
+    .ios-safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+    @media screen and (max-width: 768px) {
+      input, textarea, select { font-size: 16px !important; }
+    }
     .app-frame {
-      max-width: 960px; margin: 0 auto; min-height: 100vh; background: #f8fafc;
+      max-width: 960px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; background: #f8fafc;
       box-shadow: 0 10px 40px rgba(0,0,0,0.25); display: flex; flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     button {
       cursor: pointer;
@@ -84,13 +108,14 @@
       bottom: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
+      height: 100dvh !important;
       background-color: rgba(15, 23, 42, 0.85) !important;
       backdrop-filter: blur(4px) !important;
       -webkit-backdrop-filter: blur(4px) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      padding: 0.75rem !important;
+      padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem calc(0.75rem + env(safe-area-inset-bottom, 0px)) 0.75rem !important;
       z-index: 99999 !important;
     }
     .modal-overlay.hidden {
@@ -236,42 +261,52 @@
       <!-- Error / Status Message Box -->
       <div id="authErrorMsg" class="hidden p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold text-center"></div>
 
+      <!-- iPhone & Android App Install Guide Trigger -->
+      <button id="btnAuthInstallGuide" onclick="openInstallGuideModal()" class="w-full py-2.5 bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all">
+        <span>📲</span> <span>iPhone (iOS) / Android पर ऐप इंस्टॉल करें</span>
+      </button>
+
     </div>
   </div>
 
   <div class="app-frame">
-    <!-- Top Header -->
-    <header class="bg-slate-950 text-white px-4 py-3 flex items-center justify-between shadow-md sticky top-0 z-30 border-b border-slate-800">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('dashboard')">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-black text-xl text-slate-950 shadow-md border border-amber-300/60">
-          P
+    <!-- Sticky Wrapper for Top Header + Navigation Tabs (safe-area friendly on iPhone) -->
+    <div class="sticky top-0 z-30 bg-slate-950 ios-safe-top shadow-md">
+      <!-- Top Header -->
+      <header class="bg-slate-950 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-black text-xl text-slate-950 shadow-md border border-amber-300/60">
+            P
+          </div>
+          <div>
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight leading-tight text-white flex items-center gap-1.5">
+              PIONEER ACADEMY
+              <span class="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/40 px-1.5 py-0.2 rounded font-bold">PRO</span>
+            </h1>
+            <p class="text-[10px] text-slate-400 font-medium">JSSC • CGL • JPSC राज्य परीक्षा हब (100% ऑफ़लाइन)</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-sm sm:text-base font-extrabold tracking-tight leading-tight text-white flex items-center gap-1.5">
-            PIONEER ACADEMY
-            <span class="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/40 px-1.5 py-0.2 rounded font-bold">PRO</span>
-          </h1>
-          <p class="text-[10px] text-slate-400 font-medium">JSSC • CGL • JPSC राज्य परीक्षा हब (100% ऑफ़लाइन)</p>
-        </div>
-      </div>
 
-      <div class="flex items-center gap-2">
-        <div id="headerUserBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs">
-          <span id="headerUserRole" class="text-[10px] font-bold text-emerald-400"></span>
-          <span id="headerUserPhone" class="text-[11px] font-mono text-slate-300 font-semibold"></span>
-          <button onclick="handleLogout()" title="लॉगआउट करें" class="ml-1 text-[10px] text-rose-400 hover:text-rose-300 font-bold bg-rose-950/40 border border-rose-800/40 px-1.5 py-0.5 rounded transition-all">लॉगआउट</button>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <div id="headerUserBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs">
+            <span id="headerUserRole" class="text-[10px] font-bold text-emerald-400"></span>
+            <span id="headerUserPhone" class="text-[11px] font-mono text-slate-300 font-semibold"></span>
+            <button onclick="handleLogout()" title="लॉगआउट करें" class="ml-1 text-[10px] text-rose-400 hover:text-rose-300 font-bold bg-rose-950/40 border border-rose-800/40 px-1.5 py-0.5 rounded transition-all">लॉगआउट</button>
+          </div>
+          <button id="btnInstallApp" onclick="openInstallGuideModal()" title="iPhone / Android ऐप इंस्टॉल करें" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1">
+            <span>📲</span> <span class="hidden sm:inline">इंस्टॉल</span>
+          </button>
+          <button onclick="openStudySheetModal(state.activeTab)" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1">
+            <span>📑</span> <span class="hidden sm:inline">स्टडी शीट</span>
+          </button>
+          <button id="btnHeaderAdmin" onclick="switchTab('admin')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1 shadow-sm">
+            <span>⚙️</span> <span class="hidden sm:inline">एडमिन</span>
+          </button>
         </div>
-        <button onclick="openStudySheetModal(state.activeTab)" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1">
-          <span>📑</span> <span class="hidden sm:inline">स्टडी शीट</span>
-        </button>
-        <button id="btnHeaderAdmin" onclick="switchTab('admin')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1 shadow-sm">
-          <span>⚙️</span> <span class="hidden sm:inline">एडमिन</span>
-        </button>
-      </div>
-    </header>
+      </header>
 
-    <!-- Unified Horizontal Navigation Tabs -->
-    <nav class="bg-slate-900 text-slate-300 px-2 py-1.5 flex items-center gap-1 overflow-x-auto custom-scroll border-b border-slate-800 text-xs font-bold select-none sticky top-[57px] z-20 shadow-sm">
+      <!-- Unified Horizontal Navigation Tabs -->
+      <nav class="bg-slate-900 text-slate-300 px-2 py-1.5 flex items-center gap-1 overflow-x-auto custom-scroll border-b border-slate-800 text-xs font-bold select-none shadow-sm">
       <button id="tab_dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap bg-blue-600 text-white font-extrabold shadow-sm">
         <span>🏠</span> <span>डैशबोर्ड</span>
       </button>
@@ -297,6 +332,7 @@
         <span>⚙️</span> <span>एडमिन</span>
       </button>
     </nav>
+    </div>
 
     <!-- Search & Filter Bar -->
     <div class="p-3 bg-white border-b border-slate-200 shadow-xs">
@@ -1021,6 +1057,63 @@
       <div class="flex justify-end gap-2 pt-2 border-t">
         <button onclick="closeSmartImporterModal()" class="px-3 py-1.5 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">रद्द करें</button>
         <button onclick="processSmartImport()" class="px-4 py-1.5 bg-blue-900 text-white text-xs font-bold rounded-xl shadow-sm">सुरक्षित करें (Save)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- iPhone (iOS) & Android App Install Modal -->
+  <div id="iosInstallModal" class="hidden modal-overlay" style="z-index:100005 !important;">
+    <div class="modal-box" style="max-width:480px !important;">
+      <div class="modal-header bg-slate-950 text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black">P</div>
+          <div>
+            <h3 class="text-sm font-black text-white">📲 iPhone & Android पर ऐप इंस्टॉल करें</h3>
+            <p class="text-[11px] text-slate-400">फुल-स्क्रीन ऐप + ऑफ़लाइन सपोर्ट (Home Screen App)</p>
+          </div>
+        </div>
+        <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="modal-body space-y-4 bg-slate-50 text-slate-800">
+        <!-- iPhone / iPad Instructions -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5"><span>🍎</span> <span>iPhone / iPad (iOS Safari)</span></h4>
+            <span class="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Apple ऑफिशियल PWA</span>
+          </div>
+          <ol class="text-xs text-slate-700 space-y-2 list-decimal pl-4 leading-relaxed">
+            <li>यह लिंक अपने iPhone में <b>Safari ब्राउज़र</b> में खोलें (यदि WhatsApp या Chrome में खुला है तो नीचे से लिंक कॉपी कर Safari में पेस्ट करें)।</li>
+            <li>Safari के निचले बार में <b>Share बटन (□↑)</b> पर टैप करें।</li>
+            <li>नीचे स्क्रॉल करके <b>"Add to Home Screen" (होम स्क्रीन में जोड़ें)</b> पर टैप करें और ऊपर <b>"Add"</b> दबाएं।</li>
+          </ol>
+          <p class="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-2 font-semibold">
+            ✅ इसके बाद iPhone Home Screen पर <b>PIONEER PRO</b> आइकन आ जाएगा और यह बिना Safari बार के असली ऐप की तरह चलेगा!
+          </p>
+        </div>
+
+        <!-- Copy Link Button for In-App Browser Users -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold text-slate-900">लिंक Safari में खोलने हेतु कॉपी करें:</p>
+            <p id="installShareUrlPreview" class="text-[10px] font-mono text-slate-500 truncate"></p>
+          </div>
+          <button onclick="copyAppShareUrl()" class="shrink-0 bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-bold px-3 py-2 rounded-lg">
+            📋 कॉपी करें
+          </button>
+        </div>
+
+        <!-- Android Install Options -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs space-y-2">
+          <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5"><span>🤖</span> <span>Android मोबाइल</span></h4>
+          <div class="flex flex-wrap gap-2">
+            <button id="btnNativePwaInstall" onclick="triggerNativePwaInstall()" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-3 py-2 rounded-lg shadow-xs">
+              ⚡ तुरंत इंस्टॉल करें (PWA)
+            </button>
+            <a href="./PIONEER.apk" download="PIONEER.apk" class="flex-1 text-center bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black px-3 py-2 rounded-lg shadow-xs">
+              📥 PIONEER.apk डाउनलोड करें
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -8886,13 +8979,20 @@ const DEFAULT_FLASHCARDS = [
     function adminSendWhatsAppOtp(mobile, otp) {
       if (!mobile || !otp) return;
       const text = encodeURIComponent(`🏆 *पायनियर एकेडमी (PIONEER Academy)*\nमोबाइल नंबर ${mobile} के लॉगिन हेतु आपका 6-अंकीय ऑनलाइन OTP है: *${otp}*\n(यह OTP केवल 1 बार और 5 मिनट के लिए मान्य है। किसी से साझा न करें।)`);
-      window.open(`https://api.whatsapp.com/send?phone=91${mobile}&text=${text}`, "_blank");
+      const waUrl = `https://api.whatsapp.com/send?phone=91${mobile}&text=${text}`;
+      if (isInStandaloneMode() && isIosDevice()) {
+        window.location.href = waUrl;
+        return;
+      }
+      const win = window.open(waUrl, "_blank");
+      if (!win) window.location.href = waUrl;
     }
 
     function adminSendSmsOtp(mobile, otp) {
       if (!mobile || !otp) return;
       const text = encodeURIComponent(`PIONEER Academy Login OTP for ${mobile}: ${otp} (Valid once for 5 mins)`);
-      window.location.href = `sms:91${mobile}?body=${text}`;
+      const sep = isIosDevice() ? "&" : "?";
+      window.location.href = `sms:91${mobile}${sep}body=${text}`;
     }
 
     async function adminGenerateOtpForStudent(phone) {
@@ -9151,8 +9251,106 @@ const DEFAULT_FLASHCARDS = [
       }
     });
 
+    // iPhone (iOS) & PWA Installation Helpers
+    let deferredPwaPrompt = null;
+
+    function isIosDevice() {
+      const ua = (navigator.userAgent || "").toLowerCase();
+      return /iphone|ipad|ipod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    function isInStandaloneMode() {
+      return Boolean(
+        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+        window.navigator.standalone === true
+      );
+    }
+
+    function initPwaSupport() {
+      // Register Service Worker only on HTTP(S)/localhost origins (never inside file:// Android WebView)
+      if (
+        "serviceWorker" in navigator &&
+        (window.location.protocol === "https:" || window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+      ) {
+        navigator.serviceWorker.register("./sw.js").catch((err) => {
+          console.warn("SW registration skipped:", err);
+        });
+      }
+
+      const btnHeader = document.getElementById("btnInstallApp");
+      const btnAuth = document.getElementById("btnAuthInstallGuide");
+      if (isInStandaloneMode() || window.location.protocol === "file:") {
+        if (btnHeader) btnHeader.classList.add("hidden");
+        if (btnAuth) btnAuth.classList.add("hidden");
+      } else {
+        if (btnHeader) btnHeader.classList.remove("hidden");
+      }
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+        const nativeBtn = document.getElementById("btnNativePwaInstall");
+        if (nativeBtn) nativeBtn.classList.remove("hidden");
+        if (btnHeader) btnHeader.classList.remove("hidden");
+      });
+
+      window.addEventListener("appinstalled", () => {
+        deferredPwaPrompt = null;
+        closeInstallGuideModal();
+        if (btnHeader) btnHeader.classList.add("hidden");
+      });
+    }
+
+    function openInstallGuideModal() {
+      const modal = document.getElementById("iosInstallModal");
+      if (!modal) return;
+      const preview = document.getElementById("installShareUrlPreview");
+      if (preview) {
+        preview.textContent = (window.location.protocol === "file:")
+          ? "https://skpnr.github.io/pioneer-academy/"
+          : window.location.href.split("#")[0];
+      }
+      const nativeBtn = document.getElementById("btnNativePwaInstall");
+      if (nativeBtn) {
+        if (deferredPwaPrompt) nativeBtn.classList.remove("hidden");
+        else nativeBtn.classList.add("hidden");
+      }
+      modal.classList.remove("hidden");
+    }
+
+    function closeInstallGuideModal() {
+      const modal = document.getElementById("iosInstallModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    async function triggerNativePwaInstall() {
+      if (!deferredPwaPrompt) {
+        alert("ब्राउज़र मेनू (⋮ या Share □↑) से 'Add to Home Screen' / 'Install app' चुनें।");
+        return;
+      }
+      deferredPwaPrompt.prompt();
+      try { await deferredPwaPrompt.userChoice; } catch (e) {}
+      deferredPwaPrompt = null;
+    }
+
+    function copyAppShareUrl() {
+      const url = (window.location.protocol === "file:")
+        ? "https://skpnr.github.io/pioneer-academy/"
+        : window.location.href.split("#")[0];
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert("✅ ऐप लिंक कॉपी हो गया!\nअब इसे अपने iPhone के Safari ब्राउज़र में पेस्ट करके खोलें।");
+        }).catch(() => {
+          prompt("इस लिंक को कॉपी करें और iPhone Safari में खोलें:", url);
+        });
+      } else {
+        prompt("इस लिंक को कॉपी करें और iPhone Safari में खोलें:", url);
+      }
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       try {
+        initPwaSupport();
         initAppData();
       } catch (e) {
         console.error("DOM Ready initialization error:", e);
