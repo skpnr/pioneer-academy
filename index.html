@@ -821,17 +821,124 @@
         </div>
 
         <!-- Admin Sub-Navigation Tabs -->
-        <div class="flex p-1 bg-white rounded-2xl border border-slate-200 shadow-xs text-xs font-bold">
-          <button id="btnAdminTabStudents" onclick="switchAdminSubTab('students')" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
-            <span>👥</span> <span>अधिकृत छात्र मोबाइल प्रबंधन</span>
+        <div class="flex p-1 bg-white rounded-2xl border border-slate-200 shadow-xs text-xs font-bold gap-1">
+          <button id="btnAdminTabResults" onclick="switchAdminSubTab('results')" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
+            <span>📊</span> <span>छात्र टेस्ट रिजल्ट, रैंक व विश्लेषण</span>
+          </button>
+          <button id="btnAdminTabStudents" onclick="switchAdminSubTab('students')" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <span>👥</span> <span>अधिकृत छात्र प्रबंधन</span>
           </button>
           <button id="btnAdminTabNotes" onclick="switchAdminSubTab('notes')" class="flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
-            <span>📑</span> <span>स्टडी नोट्स प्रबंधन</span>
+            <span>📑</span> <span>स्टडी नोट्स</span>
           </button>
         </div>
 
-        <!-- SUB-PANEL 1: AUTHORIZED STUDENTS MANAGEMENT -->
-        <div id="adminPanelStudents" class="space-y-3">
+        <!-- SUB-PANEL 1: STUDENT TEST RESULTS, RANKS & QUESTION ANALYSIS -->
+        <div id="adminPanelResults" class="space-y-4">
+
+          <!-- Top Analytics Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">कुल टेस्ट सबमिशन</span>
+              <span id="statAdminTotalSubmissions" class="text-xl sm:text-2xl font-black text-slate-900">0</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">सभी 150 टेस्ट सेट्स</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-blue-600 font-bold block">सक्रिय प्रतिभागी छात्र</span>
+              <span id="statAdminActiveStudents" class="text-xl sm:text-2xl font-black text-blue-700">0</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">भाग लेने वाले छात्र</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-emerald-600 font-bold block">सर्वोच्च स्कोर (टॉपर)</span>
+              <span id="statAdminTopScore" class="text-xl sm:text-2xl font-black text-emerald-700">0</span>
+              <span id="statAdminTopTopper" class="text-[10px] text-emerald-600 truncate block mt-0.5 font-bold">🥇 रैंक 1 टॉपर</span>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-amber-600 font-bold block">औसत एक्यूरेसी</span>
+              <span id="statAdminAvgAccuracy" class="text-xl sm:text-2xl font-black text-amber-600">0%</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">शुद्धता प्रतिशत</span>
+            </div>
+          </div>
+
+          <!-- Controls & Filters Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b pb-3">
+              <div>
+                <h4 class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                  <span>🏆</span> <span>छात्र टेस्ट परिणाम, रैंक तालिका व प्रश्न विश्लेषण</span>
+                </h4>
+                <p class="text-[11px] text-slate-500">सभी सेट्स के प्राप्तांक, रैंक, 1st Attempt एवं सही/गलत प्रश्नों का लाइव सम्पूर्ण लेखा-जोखा</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="refreshAdminResults()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1">
+                  <span>🔄</span> <span>लाइव रिफ्रेश</span>
+                </button>
+                <button onclick="exportAdminResultsCsv()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-all border border-slate-300 flex items-center gap-1">
+                  <span>📥</span> <span>Excel / CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-bold">
+              <div>
+                <label class="block text-slate-600 mb-1 text-[11px]">🎯 टेस्ट सेट फ़िल्टर:</label>
+                <select id="adminFilterTestSelect" onchange="renderAdminResultsTable()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <option value="ALL">-- सभी टेस्ट सेट्स (समस्त 150 सेट्स) --</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-600 mb-1 text-[11px]">⏱️ प्रयास प्रकार (Attempt Filter):</label>
+                <select id="adminFilterAttemptSelect" onchange="renderAdminResultsTable()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <option value="FIRST_ONLY">⭐ केवल पहला प्रयास (1st Attempt Only)</option>
+                  <option value="ALL">समस्त प्रयास (All Attempts & Re-attempts)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-600 mb-1 text-[11px]">🔍 छात्र खोजें (मोबाइल या नाम):</label>
+                <input type="text" id="adminSearchStudentInput" oninput="renderAdminResultsTable()" placeholder="मोबाइल नंबर या नाम लिखें..." 
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Table Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-600 font-bold px-1">
+              <span>दिखाए जा रहे परिणाम: <span id="adminResultsFilteredCount" class="text-blue-700 font-black">0</span></span>
+              <span class="text-[11px] text-slate-400">रैंक स्कोर व एक्यूरेसी के आधार पर स्वतः गणना होती है</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-black border-b border-slate-200">
+                    <th class="p-2.5 text-center">रैंक</th>
+                    <th class="p-2.5">छात्र विवरण</th>
+                    <th class="p-2.5">टेस्ट सेट</th>
+                    <th class="p-2.5 text-center">प्राप्तांक</th>
+                    <th class="p-2.5 text-center">प्रयास</th>
+                    <th class="p-2.5 text-center">सही / गलत / छोड़ा</th>
+                    <th class="p-2.5 text-center">सटीकता</th>
+                    <th class="p-2.5">सबमिशन दिनांक व समय</th>
+                    <th class="p-2.5 text-right">कार्रवाई</th>
+                  </tr>
+                </thead>
+                <tbody id="adminResultsTableBody">
+                  <tr>
+                    <td colspan="9" class="p-8 text-center text-slate-400">डेटा लोड हो रहा है...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SUB-PANEL 2: AUTHORIZED STUDENTS MANAGEMENT -->
+        <div id="adminPanelStudents" class="hidden space-y-3">
           
           <!-- Add Student Form Card -->
           <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3">
@@ -1079,6 +1186,19 @@
             <span class="text-lg block" id="resAccuracyPct">0%</span> सटीकता
           </div>
         </div>
+
+        <!-- Live Rank and Attempt Badge on Student Scorecard -->
+        <div id="resStudentRankBox" class="max-w-sm mx-auto p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-300 text-amber-950 text-xs font-bold space-y-1.5 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><span class="text-base">🏆</span> <span>आपकी रैंक (Leaderboard):</span></span>
+            <span id="resStudentRankValue" class="text-xs font-black text-amber-900 bg-amber-200/90 border border-amber-400 px-2.5 py-0.5 rounded-full">रैंक गणना जारी...</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-amber-900 border-t border-amber-200/80 pt-1">
+            <span>प्रयास: <b id="resStudentAttemptType" class="text-blue-900">1st Attempt (पहला प्रयास)</b></span>
+            <span>कुल प्रतियोगी: <b id="resStudentTotalCompetitors">1</b> छात्र</span>
+          </div>
+        </div>
+
         <div class="text-xs text-slate-500">
           कुल प्रश्न: <span id="resTotalQuestions">0</span> | अनुत्तरित: <span id="resUnattemptedCount">0</span>
         </div>
@@ -1184,6 +1304,103 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Admin Question Analysis Modal (Question-by-Question Right/Wrong Breakdown) -->
+  <div id="adminQuestionAnalysisModal" class="modal-overlay hidden" style="z-index: 100010 !important;">
+    <div class="modal-box" style="max-width: 760px !important; max-height: 94vh !important; max-height: 94dvh !important;">
+      <div class="modal-header bg-slate-950 text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black text-sm">P</div>
+          <div>
+            <h3 id="analysisModalStudentName" class="text-sm font-black text-white">छात्र टेस्ट प्रश्न विश्लेषण</h3>
+            <p id="analysisModalTestSubtitle" class="text-[11px] text-slate-400">प्रश्नानुसार सही / गलत का सम्पूर्ण लेखा-जोखा</p>
+          </div>
+        </div>
+        <button onclick="closeQuestionAnalysisModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">&times;</button>
+      </div>
+
+      <div class="modal-body space-y-4 bg-slate-50 text-slate-800">
+        <!-- Student & Test Summary Header Banner -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="analysisRankBadge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">रैंक #1</span>
+                <span id="analysisAttemptBadge" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-200">1st Attempt</span>
+              </div>
+              <h4 id="analysisStudentPhoneDisplay" class="font-extrabold text-sm text-slate-900 mt-1.5">मोबाइल: +91 9572850513</h4>
+              <p id="analysisTestTitleDisplay" class="text-xs font-bold text-slate-600 mt-0.5"></p>
+            </div>
+            <div class="text-left sm:text-right">
+              <span id="analysisScoreDisplay" class="text-xl sm:text-2xl font-black text-emerald-700 block">70.37 / 100</span>
+              <span id="analysisSubmittedAtDisplay" class="text-[10px] text-slate-400">12 Nov 2026, 09:03 PM</span>
+            </div>
+          </div>
+
+          <!-- 4 Stat Badges -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <span id="analysisCorrectCount" class="text-lg font-black text-emerald-700 block">0</span>
+              <span class="text-[11px] font-bold text-emerald-900">✅ सही प्रश्न</span>
+            </div>
+            <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl">
+              <span id="analysisWrongCount" class="text-lg font-black text-rose-700 block">0</span>
+              <span class="text-[11px] font-bold text-rose-900">❌ गलत प्रश्न</span>
+            </div>
+            <div class="p-2.5 bg-slate-100 border border-slate-200 rounded-xl">
+              <span id="analysisUnattemptedCount" class="text-lg font-black text-slate-700 block">0</span>
+              <span class="text-[11px] font-bold text-slate-700">⚪ अनअटेम्प्ट</span>
+            </div>
+            <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-xl">
+              <span id="analysisAccuracyPct" class="text-lg font-black text-blue-700 block">0%</span>
+              <span class="text-[11px] font-bold text-blue-900">🎯 सटीकता</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Performance Grid (1 to 100) -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b pb-2">
+            <h5 class="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
+              <span>🎯</span> <span>सम्पूर्ण प्रश्न स्थिति ग्रिड (Question Status Grid)</span>
+            </h5>
+            <div class="flex items-center gap-2.5 text-[11px] font-bold">
+              <span class="inline-flex items-center gap-1 text-emerald-700"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> सही (1)</span>
+              <span class="inline-flex items-center gap-1 text-rose-700"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> गलत (0)</span>
+              <span class="inline-flex items-center gap-1 text-slate-500"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> छोड़ा (2)</span>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500">किसी भी प्रश्न संख्या पर टैप करें ताकि नीचे उस प्रश्न का पूरा विवरण, विकल्प एवं हल देखा जा सके:</p>
+          <div id="analysisQuestionGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 max-h-60 overflow-y-auto p-1.5 bg-slate-50 rounded-xl border border-slate-200 custom-scroll">
+            <!-- 100 question chips rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Question Detail Preview Card when clicked -->
+        <div id="analysisSingleQuestionCard" class="hidden bg-white border border-blue-200 rounded-2xl p-4 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span id="analysisSingleQNumBadge" class="text-xs font-black px-2.5 py-0.5 rounded bg-blue-100 text-blue-900">प्रश्न #1</span>
+            <span id="analysisSingleQStatusBadge" class="text-xs font-black px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-900">✅ सही उत्तर</span>
+          </div>
+          <h4 id="analysisSingleQText" class="font-bold text-xs sm:text-sm text-slate-900 leading-snug"></h4>
+          <div id="analysisSingleQOptions" class="space-y-1.5 text-xs font-medium"></div>
+          <div id="analysisSingleQExplanation" class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950 space-y-1">
+            <span class="font-bold text-amber-900 block">💡 प्रामाणिक व्याख्या / हल:</span>
+            <p id="analysisSingleQExplanationText" class="leading-relaxed"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer p-3 bg-white border-t border-slate-200 flex items-center justify-between">
+        <span class="text-[11px] text-slate-500">पायनियर एकेडमी • प्रशासनिक विश्लेषण</span>
+        <button onclick="closeQuestionAnalysisModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs">
+          बंद करें
+        </button>
       </div>
     </div>
   </div>
@@ -1297,17 +1514,69 @@
       }
     }
 
-    async function recordTestScoreToSupabase(scoreData) {
+    async function recordTestScoreToSupabase(scoreData, questionStates) {
+      // 1. Always record in local storage cache first (offline resilience)
+      try {
+        const localList = safeGet("PIONEER_ALL_SUBMISSIONS", []);
+        const localEntry = {
+          ...scoreData,
+          id: "local_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+          submitted_at: new Date().toISOString(),
+          question_states: questionStates || []
+        };
+        localList.unshift(localEntry);
+        safeSet("PIONEER_ALL_SUBMISSIONS", localList.slice(0, 500));
+      } catch (err) {
+        console.warn("Local submission cache warning:", err);
+      }
+
+      // 2. Post to Supabase cloud if online
       try {
         await fetch(`${SUPABASE_CONFIG.url}/rest/v1/test_submissions`, {
           method: "POST",
           headers: {
             "apikey": SUPABASE_CONFIG.anonKey,
             "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
           },
           body: JSON.stringify(scoreData)
         });
+
+        // 3. Post question chunks (25 questions per chunk) so Admin can see which questions were right/wrong on 1st attempt!
+        if (questionStates && Array.isArray(questionStates) && questionStates.length > 0) {
+          const chunkSize = 25;
+          const totalChunks = Math.ceil(questionStates.length / chunkSize);
+          for (let c = 0; c < totalChunks; c++) {
+            const slice = questionStates.slice(c * chunkSize, (c + 1) * chunkSize);
+            const digits = slice.join("");
+            const cCorrect = slice.filter(s => s === 1).length;
+            const cWrong = slice.filter(s => s === 0).length;
+            const cUn = slice.filter(s => s === 2).length;
+            const cScore = Math.max(0, (cCorrect - (cWrong * 0.33))).toFixed(2);
+            const cAcc = (cCorrect + cWrong) > 0 ? Math.round((cCorrect / (cCorrect + cWrong)) * 100) : 0;
+            const chunkTag = `${scoreData.test_id}#Q${c + 1}:${digits}`;
+            
+            fetch(`${SUPABASE_CONFIG.url}/rest/v1/test_submissions`, {
+              method: "POST",
+              headers: {
+                "apikey": SUPABASE_CONFIG.anonKey,
+                "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                student_mobile: scoreData.student_mobile,
+                test_id: chunkTag,
+                score: parseFloat(cScore),
+                accuracy: parseFloat(cAcc),
+                correct_count: cCorrect,
+                wrong_count: cWrong,
+                unattempted_count: cUn,
+                total_questions: slice.length
+              })
+            }).catch(e => console.warn("Chunk save skipped:", e));
+          }
+        }
       } catch (e) {
         console.warn("Could not record score to Supabase cloud:", e);
       }
@@ -2442,12 +2711,20 @@
 
       const qList = state.currentTest.questions;
       let correct = 0, wrong = 0, unattempted = 0;
+      const questionStates = [];
 
       qList.forEach((q, idx) => {
         const sel = state.userTestAnswers[idx];
-        if (sel === undefined) unattempted++;
-        else if (sel === q.correct) correct++;
-        else wrong++;
+        if (sel === undefined) {
+          unattempted++;
+          questionStates.push(2); // 2 = unattempted
+        } else if (sel === q.correct) {
+          correct++;
+          questionStates.push(1); // 1 = correct
+        } else {
+          wrong++;
+          questionStates.push(0); // 0 = wrong
+        }
       });
 
       const totalQ = qList.length;
@@ -2462,7 +2739,7 @@
 
       updateDashboardStats();
 
-      // Record to Supabase Cloud if online
+      // Record to Supabase Cloud & Local Storage
       if (state.currentUser && state.currentUser.mobile) {
         recordTestScoreToSupabase({
           student_mobile: state.currentUser.mobile,
@@ -2473,8 +2750,16 @@
           wrong_count: wrong,
           unattempted_count: unattempted,
           total_questions: totalQ
-        });
+        }, questionStates);
       }
+
+      // Compute and display live Rank & Attempt Badge on Student Scorecard
+      computeAndDisplayStudentRank(
+        state.currentUser ? state.currentUser.mobile : "",
+        state.currentTest.id,
+        parseFloat(finalScore),
+        parseFloat(accuracy)
+      );
 
       document.getElementById("resTotalQuestions").innerText = totalQ;
       document.getElementById("resCorrectCount").innerText = correct;
@@ -3026,8 +3311,8 @@
           if (headerPhone) headerPhone.innerText = sess.mobile;
           if (tabAdmin) tabAdmin.classList.remove("hidden");
           if (btnHeaderAdmin) btnHeaderAdmin.classList.remove("hidden");
-          renderAuthorizedStudentsTable();
-          renderAdminNotesTable();
+          populateAdminTestFilterOptions();
+          switchAdminSubTab("results");
         } else {
           state.isAdminUnlocked = false;
           if (headerRole) headerRole.innerText = "🎓 छात्र";
@@ -3045,22 +3330,31 @@
     // ADMIN FUNCTIONS & STUDENT MANAGEMENT
     // ====================================================
     function switchAdminSubTab(tab) {
+      const btnResults = document.getElementById("btnAdminTabResults");
       const btnStud = document.getElementById("btnAdminTabStudents");
       const btnNotes = document.getElementById("btnAdminTabNotes");
+      const pResults = document.getElementById("adminPanelResults");
       const pStud = document.getElementById("adminPanelStudents");
       const pNotes = document.getElementById("adminPanelNotes");
 
-      if (tab === "students") {
-        if (btnStud) btnStud.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm";
-        if (btnNotes) btnNotes.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900";
-        if (pStud) pStud.classList.remove("hidden");
-        if (pNotes) pNotes.classList.add("hidden");
+      state.adminActiveSubTab = tab;
+
+      const activeCls = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm";
+      const inactiveCls = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900";
+
+      if (btnResults) btnResults.className = (tab === "results") ? activeCls : inactiveCls;
+      if (btnStud) btnStud.className = (tab === "students") ? activeCls : inactiveCls;
+      if (btnNotes) btnNotes.className = (tab === "notes") ? activeCls : inactiveCls;
+
+      if (pResults) pResults.classList.toggle("hidden", tab !== "results");
+      if (pStud) pStud.classList.toggle("hidden", tab !== "students");
+      if (pNotes) pNotes.classList.toggle("hidden", tab !== "notes");
+
+      if (tab === "results") {
+        fetchTestSubmissionsFromSupabase().then(() => renderAdminResultsTable());
+      } else if (tab === "students") {
         renderAuthorizedStudentsTable();
-      } else {
-        if (btnStud) btnStud.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900";
-        if (btnNotes) btnNotes.className = "flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm";
-        if (pStud) pStud.classList.add("hidden");
-        if (pNotes) pNotes.classList.remove("hidden");
+      } else if (tab === "notes") {
         renderAdminNotesTable();
       }
     }
@@ -3296,9 +3590,536 @@
 
     function checkAdminAccess() {
       if (state.currentUser && state.currentUser.role === "admin") {
-        renderAuthorizedStudentsTable();
-        renderAdminNotesTable();
+        populateAdminTestFilterOptions();
+        switchAdminSubTab("results");
         syncStudentsFromSupabase();
+        fetchTestSubmissionsFromSupabase().then(() => renderAdminResultsTable());
+      }
+    }
+
+    // ====================================================
+    // ADMIN RESULTS, RANKINGS & QUESTION ANALYSIS ENGINE
+    // ====================================================
+    async function computeAndDisplayStudentRank(mobile, testId, myScore, myAcc) {
+      const rankVal = document.getElementById("resStudentRankValue");
+      const compEl = document.getElementById("resStudentTotalCompetitors");
+      const attEl = document.getElementById("resStudentAttemptType");
+      if (!rankVal) return;
+
+      let allSubs = safeGet("PIONEER_ALL_SUBMISSIONS", []).filter(s => s && s.test_id === testId && !s.test_id.includes("#"));
+
+      function updateRankUi(subsList) {
+        const mySub = { student_mobile: mobile || "me", score: myScore, accuracy: myAcc, submitted_at: new Date().toISOString() };
+        const myPastAttempts = subsList.filter(s => s.student_mobile === mobile);
+        const isFirst = myPastAttempts.length <= 1;
+        const attemptNum = Math.max(1, myPastAttempts.length);
+
+        const studentBestMap = new Map();
+        subsList.concat([mySub]).forEach(s => {
+          const mob = s.student_mobile || "anon";
+          const curr = studentBestMap.get(mob);
+          if (!curr || (s.score > curr.score) || (s.score === curr.score && s.accuracy > curr.accuracy)) {
+            studentBestMap.set(mob, s);
+          }
+        });
+
+        const ranked = Array.from(studentBestMap.values()).sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return (b.accuracy || 0) - (a.accuracy || 0);
+        });
+
+        const myRank = ranked.findIndex(s => (s.student_mobile === mobile) || (s.score === myScore && s.accuracy === myAcc)) + 1;
+        const totalStudents = Math.max(1, ranked.length);
+
+        const rankBadge = myRank === 1 ? "🥇 रैंक #1 (Top Ranker!)" : (myRank === 2 ? "🥈 रैंक #2" : (myRank === 3 ? "🥉 रैंक #3" : `🏆 रैंक #${myRank}`));
+        rankVal.innerHTML = `${rankBadge} <span class="text-[10px] text-amber-800 font-normal">/ ${totalStudents} छात्र</span>`;
+        if (compEl) compEl.innerText = `${totalStudents}`;
+        if (attEl) {
+          attEl.innerHTML = isFirst 
+            ? `<span class="text-emerald-700 font-black">⭐ 1st Attempt (पहला प्रयास)</span>` 
+            : `<span class="text-blue-700 font-bold">पुनः प्रयास #${attemptNum}</span>`;
+        }
+      }
+
+      // Immediate synchronous update (zero latency)
+      updateRankUi(allSubs);
+
+      // Async cloud sync
+      try {
+        if ("fetch" in window && SUPABASE_CONFIG.url) {
+          const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/test_submissions?test_id=eq.${testId}&select=student_mobile,score,accuracy,submitted_at&order=submitted_at.asc`, {
+            headers: {
+              "apikey": SUPABASE_CONFIG.anonKey,
+              "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+            }
+          });
+          if (res.ok) {
+            const remote = await res.json();
+            if (Array.isArray(remote) && remote.length > 0) {
+              updateRankUi(remote.filter(s => !s.test_id || !s.test_id.includes("#")));
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    async function fetchTestSubmissionsFromSupabase() {
+      let remoteRows = [];
+      try {
+        const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/test_submissions?select=*&order=submitted_at.desc&limit=1000`, {
+          headers: {
+            "apikey": SUPABASE_CONFIG.anonKey,
+            "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+          }
+        });
+        if (res.ok) {
+          remoteRows = await res.json();
+        }
+      } catch (e) {
+        console.warn("Could not fetch submissions from Supabase:", e);
+      }
+
+      const localRows = safeGet("PIONEER_ALL_SUBMISSIONS", []);
+      const mergedMap = new Map();
+      remoteRows.forEach(r => { if (r && r.id) mergedMap.set(r.id, r); });
+      localRows.forEach(r => { if (r && r.id && !mergedMap.has(r.id)) mergedMap.set(r.id, r); });
+
+      const allRows = Array.from(mergedMap.values());
+      safeSet("PIONEER_ALL_SUBMISSIONS", allRows);
+
+      const mainSubs = [];
+      const chunkMap = new Map();
+
+      allRows.forEach(r => {
+        if (!r.test_id) return;
+        if (r.test_id.includes("#Q")) {
+          const parts = r.test_id.split("#Q");
+          const baseTest = parts[0];
+          const qPart = parts[1] || "";
+          const colonIdx = qPart.indexOf(":");
+          if (colonIdx > 0) {
+            const chunkIdx = qPart.substring(0, colonIdx);
+            const digits = qPart.substring(colonIdx + 1);
+            const key = `${r.student_mobile}_${baseTest}`;
+            if (!chunkMap.has(key)) chunkMap.set(key, {});
+            chunkMap.get(key)[chunkIdx] = digits;
+          }
+        } else {
+          mainSubs.push(r);
+        }
+      });
+
+      // Sort chronological to identify 1st attempt vs subsequent re-attempts
+      mainSubs.sort((a, b) => new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0));
+      const studentTestAttempts = new Map();
+
+      mainSubs.forEach(sub => {
+        const key = `${sub.student_mobile}_${sub.test_id}`;
+        const count = (studentTestAttempts.get(key) || 0) + 1;
+        studentTestAttempts.set(key, count);
+        sub.attemptNumber = count;
+        sub.isFirstAttempt = (count === 1);
+
+        // Attach reconstructed question breakdown
+        if (!sub.question_states || sub.question_states.length === 0) {
+          const chunks = chunkMap.get(key);
+          if (chunks) {
+            let fullDigits = "";
+            for (let i = 1; i <= 4; i++) {
+              if (chunks[String(i)]) fullDigits += chunks[String(i)];
+            }
+            if (fullDigits) {
+              sub.question_states = fullDigits.split("").map(Number);
+            }
+          }
+        }
+      });
+
+      // Group by test_id to calculate ranks
+      const testGroups = new Map();
+      mainSubs.forEach(sub => {
+        if (!testGroups.has(sub.test_id)) testGroups.set(sub.test_id, []);
+        testGroups.get(sub.test_id).push(sub);
+      });
+
+      testGroups.forEach((subs) => {
+        subs.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+          return new Date(a.submitted_at || 0) - new Date(b.submitted_at || 0);
+        });
+
+        subs.forEach((sub, idx) => {
+          if (idx > 0) {
+            const prev = subs[idx - 1];
+            if (sub.score === prev.score && sub.accuracy === prev.accuracy) {
+              sub.rank = prev.rank;
+            } else {
+              sub.rank = idx + 1;
+            }
+          } else {
+            sub.rank = 1;
+          }
+          sub.totalCompetitors = subs.length;
+        });
+      });
+
+      state.adminSubmissions = mainSubs;
+      return mainSubs;
+    }
+
+    function renderAdminResultsTable() {
+      const tbody = document.getElementById("adminResultsTableBody");
+      if (!tbody) return;
+
+      const submissions = state.adminSubmissions || [];
+      const testFilter = document.getElementById("adminFilterTestSelect") ? document.getElementById("adminFilterTestSelect").value : "ALL";
+      const attemptFilter = document.getElementById("adminFilterAttemptSelect") ? document.getElementById("adminFilterAttemptSelect").value : "FIRST_ONLY";
+      const searchQuery = document.getElementById("adminSearchStudentInput") ? document.getElementById("adminSearchStudentInput").value.trim().toLowerCase() : "";
+
+      // Compute Top Analytics
+      const totalSubs = submissions.length;
+      const uniqueStudents = new Set(submissions.map(s => s.student_mobile)).size;
+      let topScore = 0;
+      let topTopper = "कोई नहीं";
+      let totalAcc = 0;
+
+      submissions.forEach(s => {
+        if (s.score > topScore) {
+          topScore = s.score;
+          const studName = getStudentDisplayName(s.student_mobile);
+          topTopper = `${studName} (${s.score})`;
+        }
+        totalAcc += (s.accuracy || 0);
+      });
+      const avgAcc = totalSubs > 0 ? Math.round(totalAcc / totalSubs) : 0;
+
+      const elTot = document.getElementById("statAdminTotalSubmissions");
+      const elAct = document.getElementById("statAdminActiveStudents");
+      const elTop = document.getElementById("statAdminTopScore");
+      const elTopT = document.getElementById("statAdminTopTopper");
+      const elAvg = document.getElementById("statAdminAvgAccuracy");
+      if (elTot) elTot.innerText = totalSubs;
+      if (elAct) elAct.innerText = uniqueStudents;
+      if (elTop) elTop.innerText = topScore;
+      if (elTopT) elTopT.innerText = topTopper;
+      if (elAvg) elAvg.innerText = `${avgAcc}%`;
+
+      // Filter submissions
+      let filtered = submissions.filter(s => {
+        if (testFilter !== "ALL" && s.test_id !== testFilter) return false;
+        if (attemptFilter === "FIRST_ONLY" && !s.isFirstAttempt) return false;
+        if (searchQuery) {
+          const mob = s.student_mobile || "";
+          const name = getStudentDisplayName(s.student_mobile).toLowerCase();
+          if (!mob.includes(searchQuery) && !name.includes(searchQuery)) return false;
+        }
+        return true;
+      });
+
+      // Sort
+      if (testFilter !== "ALL") {
+        filtered.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+      } else {
+        filtered.sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+      }
+
+      const countBadge = document.getElementById("adminResultsFilteredCount");
+      if (countBadge) countBadge.innerText = filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 bg-white">कोई परिणाम उपलब्ध नहीं है। छात्र द्वारा टेस्ट सबमिट करते ही यहाँ दिखेगा।</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(sub => {
+        const studentName = getStudentDisplayName(sub.student_mobile);
+        const testObj = (state.tests || []).find(t => t.id === sub.test_id) || { title: sub.test_id, subject: "सामान्य" };
+        const isHist = (testObj.category === "HIST" || testObj.subject === "History");
+        const isMath = (testObj.category === "MATH" || testObj.subject === "Mathematics");
+        const tagCls = isHist ? "bg-rose-100 text-rose-900 border-rose-200" : isMath ? "bg-indigo-100 text-indigo-900 border-indigo-200" : "bg-emerald-100 text-emerald-900 border-emerald-200";
+
+        const r = sub.rank || 1;
+        const rankBadge = r === 1 
+          ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-400 text-slate-950 font-black shadow-xs text-xs">🥇 1</span>`
+          : (r === 2 
+            ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-300 text-slate-900 font-black shadow-xs text-xs">🥈 2</span>`
+            : (r === 3
+              ? `<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-600 text-white font-black shadow-xs text-xs">🥉 3</span>`
+              : `<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-extrabold text-xs">#${r}</span>`));
+
+        const attemptBadge = sub.isFirstAttempt
+          ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-300 font-extrabold text-[11px]">⭐ 1st Attempt</span>`
+          : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-900 border border-blue-200 font-bold text-[11px]">प्रयास #${sub.attemptNumber}</span>`;
+
+        return `
+          <tr class="border-b hover:bg-slate-50 transition-colors">
+            <td class="p-2.5 text-center">${rankBadge}</td>
+            <td class="p-2.5">
+              <div class="font-extrabold text-slate-900">${studentName}</div>
+              <div class="font-mono text-[11px] text-slate-500 font-semibold">+91 ${sub.student_mobile}</div>
+            </td>
+            <td class="p-2.5 max-w-[220px]">
+              <span class="inline-block px-1.5 py-0.2 text-[9px] font-black rounded border ${tagCls} uppercase mb-0.5">${testObj.subject || 'टेस्ट'}</span>
+              <div class="font-bold text-slate-800 truncate" title="${testObj.title}">${testObj.title}</div>
+            </td>
+            <td class="p-2.5 text-center font-black">
+              <span class="text-sm text-emerald-700">${sub.score}</span>
+              <span class="text-[10px] text-slate-400 font-normal"> / ${sub.total_questions || 100}</span>
+            </td>
+            <td class="p-2.5 text-center">${attemptBadge}</td>
+            <td class="p-2.5 text-center">
+              <div class="inline-flex items-center gap-1 font-mono text-[11px] font-bold">
+                <span class="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200" title="सही">✅ ${sub.correct_count || 0}</span>
+                <span class="text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200" title="गलत">❌ ${sub.wrong_count || 0}</span>
+                <span class="text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200" title="अनअटेम्प्ट">⚪ ${sub.unattempted_count || 0}</span>
+              </div>
+            </td>
+            <td class="p-2.5 text-center">
+              <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs">${sub.accuracy || 0}%</span>
+            </td>
+            <td class="p-2.5 text-slate-600 text-[11px] whitespace-nowrap">${formatSubmissionTime(sub.submitted_at)}</td>
+            <td class="p-2.5 text-right whitespace-nowrap">
+              <button onclick="openQuestionAnalysisModal('${sub.id}')" class="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 ml-auto">
+                <span>👁️</span> <span>प्रश्न विश्लेषण</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function openQuestionAnalysisModal(submissionId) {
+      const modal = document.getElementById("adminQuestionAnalysisModal");
+      if (!modal) return;
+
+      const sub = (state.adminSubmissions || []).find(s => s.id === submissionId);
+      if (!sub) return;
+
+      state.adminSelectedSubmission = sub;
+      const studentName = getStudentDisplayName(sub.student_mobile);
+      let testObj = (state.tests || []).find(t => t.id === sub.test_id);
+      if (!testObj) testObj = { id: sub.test_id, title: sub.test_id, subject: "सामान्य", questions: [] };
+
+      if (!testObj.questions || testObj.questions.length === 0) {
+        try {
+          await ensureTestLoaded(testObj);
+        } catch (_) {}
+      }
+
+      document.getElementById("analysisModalStudentName").innerText = `${studentName} - प्रश्न विश्लेषण`;
+      document.getElementById("analysisModalTestSubtitle").innerText = testObj.title;
+      document.getElementById("analysisRankBadge").innerText = `रैंक #${sub.rank || 1} / ${sub.totalCompetitors || 1}`;
+      document.getElementById("analysisAttemptBadge").innerHTML = sub.isFirstAttempt 
+        ? "⭐ 1st Attempt (पहला प्रयास)" 
+        : `पुनः प्रयास #${sub.attemptNumber}`;
+      document.getElementById("analysisStudentPhoneDisplay").innerText = `छात्र: ${studentName} (+91 ${sub.student_mobile})`;
+      document.getElementById("analysisTestTitleDisplay").innerText = testObj.title;
+      document.getElementById("analysisScoreDisplay").innerText = `${sub.score} / ${sub.total_questions || 100}`;
+      document.getElementById("analysisSubmittedAtDisplay").innerText = formatSubmissionTime(sub.submitted_at);
+      document.getElementById("analysisCorrectCount").innerText = sub.correct_count || 0;
+      document.getElementById("analysisWrongCount").innerText = sub.wrong_count || 0;
+      document.getElementById("analysisUnattemptedCount").innerText = sub.unattempted_count || 0;
+      document.getElementById("analysisAccuracyPct").innerText = `${sub.accuracy || 0}%`;
+
+      const totalQ = sub.total_questions || (testObj.questions ? testObj.questions.length : 100);
+      let states = sub.question_states;
+      if (!states || states.length === 0) {
+        states = [];
+        const c = sub.correct_count || 0;
+        const w = sub.wrong_count || 0;
+        const u = sub.unattempted_count || (totalQ - c - w);
+        for (let i = 0; i < c; i++) states.push(1);
+        for (let i = 0; i < w; i++) states.push(0);
+        for (let i = 0; i < u; i++) states.push(2);
+      }
+
+      const grid = document.getElementById("analysisQuestionGrid");
+      if (grid) {
+        grid.innerHTML = states.map((st, idx) => {
+          const qNum = idx + 1;
+          const bgCls = st === 1 
+            ? "bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border-emerald-300" 
+            : (st === 0 
+              ? "bg-rose-100 hover:bg-rose-200 text-rose-900 border-rose-300" 
+              : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300");
+          const icon = st === 1 ? "✅" : (st === 0 ? "❌" : "⚪");
+          return `
+            <button onclick="renderAnalysisSingleQuestion(${idx})" class="p-1.5 rounded-lg border text-center text-[11px] font-black transition-all flex flex-col items-center justify-center ${bgCls}">
+              <span>${qNum}</span>
+              <span class="text-[9px]">${icon}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      renderAnalysisSingleQuestion(0);
+      modal.classList.remove("hidden");
+    }
+
+    function closeQuestionAnalysisModal() {
+      const modal = document.getElementById("adminQuestionAnalysisModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function renderAnalysisSingleQuestion(qIndex) {
+      const card = document.getElementById("analysisSingleQuestionCard");
+      if (!card || !state.adminSelectedSubmission) return;
+
+      const sub = state.adminSelectedSubmission;
+      const testObj = (state.tests || []).find(t => t.id === sub.test_id);
+      if (!testObj || !testObj.questions || !testObj.questions[qIndex]) {
+        card.classList.add("hidden");
+        return;
+      }
+
+      const q = testObj.questions[qIndex];
+      const states = sub.question_states || [];
+      const st = states[qIndex] !== undefined ? states[qIndex] : (qIndex < (sub.correct_count || 0) ? 1 : 0);
+
+      const qNumEl = document.getElementById("analysisSingleQNumBadge");
+      const stEl = document.getElementById("analysisSingleQStatusBadge");
+      const textEl = document.getElementById("analysisSingleQText");
+      const optEl = document.getElementById("analysisSingleQOptions");
+      const expEl = document.getElementById("analysisSingleQExplanationText");
+
+      if (qNumEl) qNumEl.innerText = `प्रश्न #${qIndex + 1} / ${testObj.questions.length}`;
+      if (stEl) {
+        if (st === 1) {
+          stEl.className = "text-xs font-black px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300";
+          stEl.innerText = "✅ छात्र द्वारा 1st Attempt में सही हल";
+        } else if (st === 0) {
+          stEl.className = "text-xs font-black px-2.5 py-0.5 rounded bg-rose-100 text-rose-900 border border-rose-300";
+          stEl.innerText = "❌ छात्र द्वारा गलत उत्तर (-0.33 नेगेटिव अंक)";
+        } else {
+          stEl.className = "text-xs font-black px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300";
+          stEl.innerText = "⚪ छात्र द्वारा अनुत्तरित (Unattempted)";
+        }
+      }
+
+      if (textEl) textEl.innerText = q.q;
+
+      if (optEl && q.options) {
+        optEl.innerHTML = q.options.map((opt, oIdx) => {
+          const isCorrect = (oIdx === q.correct);
+          let optCls = "bg-white border-slate-200 text-slate-800";
+          let badge = `<span class="w-5 h-5 rounded-full bg-slate-100 text-slate-700 inline-flex items-center justify-center font-bold text-[10px] mr-2">${String.fromCharCode(65 + oIdx)}</span>`;
+          if (isCorrect) {
+            optCls = "bg-emerald-50 border-emerald-400 text-emerald-950 font-bold ring-1 ring-emerald-400";
+            badge = `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white inline-flex items-center justify-center font-black text-[10px] mr-2">✓</span>`;
+          }
+          return `
+            <div class="p-2.5 rounded-xl border flex items-center ${optCls}">
+              ${badge}
+              <span class="flex-1">${opt}</span>
+              ${isCorrect ? `<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded ml-2">सही उत्तर</span>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+
+      if (expEl) {
+        expEl.innerText = q.exp || "इस प्रश्न का मानक प्रतियोगी हल एवं संदर्भ पायनियर एकेडमी प्रश्न बैंक द्वारा सत्यापित है।";
+      }
+
+      card.classList.remove("hidden");
+    }
+
+    function populateAdminTestFilterOptions() {
+      const sel = document.getElementById("adminFilterTestSelect");
+      if (!sel || sel.dataset.populated === "true" || !state.tests) return;
+
+      const jhTests = state.tests.filter(t => !t.category || t.category === "JH" || (!t.category.includes("HIST") && !t.category.includes("MATH") && t.subject !== "History" && t.subject !== "Mathematics"));
+      const mathTests = state.tests.filter(t => t.category === "MATH" || t.subject === "Mathematics");
+      const histTests = state.tests.filter(t => t.category === "HIST" || t.subject === "History");
+
+      let html = '<option value="ALL">-- सभी टेस्ट सेट्स (समस्त 150 सेट्स) --</option>';
+
+      if (jhTests.length > 0) {
+        html += `<optgroup label="झारखंड GK एवं राज्य सामान्य ज्ञान (${jhTests.length} सेट्स)">`;
+        html += jhTests.map(t => `<option value="${t.id}">${t.title}</option>`).join("");
+        html += `</optgroup>`;
+      }
+      if (mathTests.length > 0) {
+        html += `<optgroup label="गणित (Mathematics Mock Series - ${mathTests.length} सेट्स)">`;
+        html += mathTests.map(t => `<option value="${t.id}">${t.title}</option>`).join("");
+        html += `</optgroup>`;
+      }
+      if (histTests.length > 0) {
+        html += `<optgroup label="इतिहास (History UPSC/PCS Series - ${histTests.length} सेट्स)">`;
+        html += histTests.map(t => `<option value="${t.id}">${t.title}</option>`).join("");
+        html += `</optgroup>`;
+      }
+
+      sel.innerHTML = html;
+      sel.dataset.populated = "true";
+    }
+
+    function getStudentDisplayName(mobile) {
+      if (!mobile) return "अज्ञात छात्र";
+      const studList = getAuthorizedStudents() || [];
+      const found = studList.find(s => s.mobile === mobile);
+      if (found && found.name && found.name.trim() && !found.name.startsWith("?????")) {
+        return found.name;
+      }
+      return `छात्र (+91 ${mobile})`;
+    }
+
+    function formatSubmissionTime(isoStr) {
+      if (!isoStr) return "-";
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString("hi-IN", { day: "2-digit", month: "short" }) + ", " + d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+      } catch (_) {
+        return isoStr;
+      }
+    }
+
+    function exportAdminResultsCsv() {
+      const subs = state.adminSubmissions || [];
+      if (subs.length === 0) {
+        alert("निर्यात करने के लिए कोई सबमिशन डेटा नहीं है।");
+        return;
+      }
+
+      const headers = ["Rank", "Student Name", "Mobile", "Test ID", "Test Title", "Score", "Total Questions", "Accuracy Pct", "Correct", "Wrong", "Unattempted", "Attempt Type", "Submitted At"];
+      const rows = subs.map(s => {
+        const name = getStudentDisplayName(s.student_mobile);
+        const testObj = (state.tests || []).find(t => t.id === s.test_id) || { title: s.test_id };
+        return [
+          s.rank || 1,
+          `"${name.replace(/"/g, '""')}"`,
+          `'${s.student_mobile}`,
+          s.test_id,
+          `"${testObj.title.replace(/"/g, '""')}"`,
+          s.score,
+          s.total_questions || 100,
+          s.accuracy || 0,
+          s.correct_count || 0,
+          s.wrong_count || 0,
+          s.unattempted_count || 0,
+          s.isFirstAttempt ? "1st Attempt" : `Re-attempt #${s.attemptNumber}`,
+          `"${s.submitted_at || ''}"`
+        ].join(",");
+      });
+
+      const csvContent = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `PIONEER_Student_Rankings_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function refreshAdminResults() {
+      try {
+        await fetchTestSubmissionsFromSupabase();
+        renderAdminResultsTable();
+      } catch (e) {
+        console.warn("Refresh results warning:", e);
       }
     }
 
